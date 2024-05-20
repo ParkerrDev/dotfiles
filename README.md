@@ -1,2 +1,2 @@
 # dotfiles
-My personal dotfiles, free to the public in case someone likes my setup!
+My personal dotfiles, free to the public in case anyone likes my setup!
