@@ -1,9 +1,0 @@
-kitty
-nautilus
-swaybg
-gammastep
-waybar
-wdisplays
-wofi
-blueman-applet
-nm-applet

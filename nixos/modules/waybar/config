@@ -34,7 +34,7 @@
         "tooltip" : true,
         "format" : "{}",
         "interval" : 30,
-        "exec" : "~/.config/waybar/scripts/waybar-wttr.py",
+        "exec" : "nix-shell ~/Strixy/shell.nix --run ~/.config/waybar/scripts/waybar-wttr.py",
         "return-type" : "json"
     },
     "tray": {
@@ -42,9 +42,11 @@
         "spacing": 10
     },
     "clock": {
-        "format": "{:\uf017 %I:%M %p \uf073 %m/%d/%y}",  // 12-hour format with AM/PM and seconds, date in dd/mm/yyyy
-        "tooltip-format": "<big>{:%d/%m/%Y}</big>\n<tt><small>{:%A, %B %d, %Y}</small></tt>",  // Full date in tooltip
-    },    
+        "tooltip" : true,
+        "interval": 60,
+        "format": "\uf017 {:%I:%M %p \uf073 %m/%d/%y}",
+        "tooltip-format": "<big>{:%d/%m/%Y}</big>\n<tt><small>{:%A, %B %d, %Y}</small></tt>"
+    },
     "backlight": {
         "device": "intel_backlight",
         "format": "{icon} {percent}%",
@@ -67,8 +69,8 @@
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
-        "tooltip": false,
-        "format-muted": "\uf6a9",
+        "tooltip": true,
+        "format-muted": "",
         "on-click": "pamixer -t",
         "on-scroll-up": "pamixer -i 5",
         "on-scroll-down": "pamixer -d 5",
