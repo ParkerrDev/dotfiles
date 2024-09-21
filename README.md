@@ -1,7 +1,7 @@
 # dotfiles
 
 <h1 align="center">
-   <img src="assets/nixos-logo.png" width="100px" /> 
+   <img src="nixos-logo.png" width="100px" /> 
    <br>
       My Dotfiles
    <br>
