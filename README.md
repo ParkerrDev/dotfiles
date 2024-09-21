@@ -18,4 +18,20 @@
 </div>
 </h1>
 
-My personal dotfiles, free to the public in case anyone likes my setup!
+<div align="center">
+  <p>My personal dotfiles, free to the public in case anyone likes my setup!</p>
+  
+| Component        | Version/Name                   |
+| ---------------- | ------------------------------ |
+| Distro           | NixOS                          |
+| Shell            | Bash                           |
+| Display Server   | Wayland                        |
+| WM (Compositor)  | Hyprland                       |
+| Bar              | Waybar                         |
+| Launcher         | Wofi                           |
+| Editor           | Neovim                         |
+| Terminal         | Kitty                          |
+| Fetch Utility    | Fastfetch                      |
+| Display Manager  | GDM                            |
+
+</div>
