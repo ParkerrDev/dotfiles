@@ -20,6 +20,8 @@
 
 <div align="center">
   <p>My personal dotfiles, free to the public in case anyone likes my setup!</p>
+
+   <img src="laptop.jpg" width="500px" /> 
   
 | Component        | Version/Name                   |
 | ---------------- | ------------------------------ |
