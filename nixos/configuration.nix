@@ -7,7 +7,7 @@
   ];
 
   # System State Version
-  system.stateVersion = "24.05";
+  system.stateVersion = "24.11";
 
   # Nix Settings
   nix.settings.experimental-features = [ "nix-command" "flakes" ]; # Nix Flakes
@@ -26,6 +26,7 @@
 
   # Bootloader Configuration1
   boot.loader.systemd-boot.enable = true;
+  boot.loader.timeout = 60;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.initrd.luks.devices."luks-2cdebd65-326f-46c5-bfa0-753247f43f88".device =
     "/dev/disk/by-uuid/2cdebd65-326f-46c5-bfa0-753247f43f88";
@@ -35,14 +36,31 @@
   boot.extraModprobeConfig = ''
   options snd-intel-dspcfg dsp_driver=1
   '';
-
   # boot.initrd.availableKernelModules = [ "mt76x2u" ];
-  # boot.extraModulePackages = [ pkgsmypackages.mt7961 ];
-
+  # # boot.extraModulePackages = [ pkgsmypackages.mt7961 ];
+  # hardware.usb-modeswitch.enable = true;
 
   #Virtualization
+
+  users.extraGroups.docker.members = [ "parker"];
+  virtualisation.docker.enable = true;
+  virtualisation.docker.rootless = {
+    enable = true;
+    setSocketVariable = true;
+  };
+  hardware.nvidia-container-toolkit.enable = true; # enable gpu passtrhough w/ docker
+
+
+  virtualisation.docker.daemon.settings = {
+    userland-proxy = false;
+    experimental = true;
+    metrics-addr = "0.0.0.0:9323";
+  };
+
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
+
+
 
   # virtualisation.virtualbox.host.enable = true; # Causes build failures
   # virtualisation.virtualbox.guest.enable = true;
@@ -135,6 +153,7 @@
 
   # Allow Unfree Packages
   nixpkgs.config.allowUnfree = true;
+  hardware.enableRedistributableFirmware = true;
 
   services.samba.enable = true; # iPhone File support (i think)
   services.usbmuxd.enable = true; # iPhone File support (i think)

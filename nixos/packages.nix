@@ -1,7 +1,7 @@
 pkgs: with pkgs;[
   #Custom
   mypackages.gtk-theme
-  mypackages.mt7961
+  mypackages.mt7961 # must disable gigabyte ethernet to work
 
   # Nix OS
   #home-manager
@@ -47,7 +47,8 @@ pkgs: with pkgs;[
   brightnessctl
   playerctl
   pamixer
-  dunst
+  #dunst
+  mako
   pavucontrol
   grim # screenshots
   slurp
@@ -72,14 +73,28 @@ pkgs: with pkgs;[
   ytdownloader
   wireguard-tools #VPNs
   motrix
-  blender
   rpi-imager
   easyeffects # Equalizer
-  #krita
   zed-editor
-  session-desktop
+  thunderbird
+  protonvpn-gui
+  session-desktop # private messenger (not working)
+  briar-desktop # offline p2p e2ee tor messenger (not working)
   github-desktop
   gimp
+  figma-linux
+  bambu-studio
+
+  # Hacking
+  aircrack-ng
+  hashcat
+  hashcat-utils
+  wireshark
+  hcxtools
+  macchanger
+  reaverwps-t6x
+  crunch
+  cewl
 
   # Gaming
   protonup-qt
@@ -88,6 +103,7 @@ pkgs: with pkgs;[
   protontricks
   heroic
   gamemode
+  gamescope
 
   # Unreal Engine
   #mono
@@ -110,6 +126,7 @@ pkgs: with pkgs;[
 
   # Command Line Tools
   blesh # ble.sh
+  atuin
   neovim
   neofetch
   fastfetch
@@ -122,6 +139,9 @@ pkgs: with pkgs;[
   imagemagick
   calibre
   unzip
+  ipatool
+  dpkg
+  patchelf
 
   # Graphical Utilities
   nautilus
@@ -129,17 +149,22 @@ pkgs: with pkgs;[
   gparted
   vlc
 
+  # rust ebook project
+  cargo
+  rustup
+  rustc
+
+  #NeuraLink Compression Challenge
+  flac
+
   #Coding
   gh # github cli
   SDL2
   gcc
   gnumake
   cmake
-  rustup
-  rustc
-  cargo
   xorg.xhost # manage xhost perms
   (ollama.override { acceleration = "cuda"; })
-
+  nodejs_22 # npm for electron apps
   wireplumber # not sure what i used this for
 ]
