@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, stable, unstable, ... }:
 
 {
   imports = [
@@ -7,7 +7,7 @@
   ];
 
   # System State Version
-  system.stateVersion = "24.11";
+  system.stateVersion = "24.05";
 
   # Nix Settings
   nix.settings.experimental-features = [ "nix-command" "flakes" ]; # Nix Flakes
@@ -140,10 +140,12 @@
   users.users.parker = {
     isNormalUser = true;
     description = "Parker";
-    extraGroups = [ "networkmanager" "wheel" "i2c"];
-    packages = with pkgs; [ ];
+    extraGroups = [ "networkmanager" "wheel" "i2c" "asusd"];  # Added input and video groups
+    packages = with pkgs; [ stable.brightnessctl ];
   };
 
+  # Create asusd group
+  users.groups.asusd = {};
 
   home-manager = {
     # also pass inputs to home-manager modules
@@ -162,10 +164,24 @@
 
   services.udisks2.enable = true; # Auto detection and mounting of drives
   services.gvfs.enable = true; # Auto detection and mounting of drives
-  services.asusd.enable = true; # ROG Control Center
+
+  services.asusd = {
+    enable = true;
+    enableUserService = true;
+    package = stable.asusctl;
+  };
+  services.supergfxd.enable = true;
+  systemd.services.supergfxd.path = [ pkgs.pciutils ];
+
   services.ratbagd.enable = true; # Piper Mouse Configuration
 
   hardware.enableAllFirmware = true; # trying to fix sound - didnt fix
+
+  #services.windscribe = {
+  #  enable = true;
+  #  autoStart = true;  # Optional: set to false if you don't want it to start automatically
+  # };
+
 
   # Bluetooth and blueman-applet
   hardware.bluetooth.enable = true;
@@ -205,7 +221,8 @@
   fonts.packages = with pkgs; [
     # font-awesome
     noto-fonts
-    noto-fonts-cjk
+    #noto-fonts-cjk - rog-control-center possibly not working because of this being deprecated
+    noto-fonts-cjk-sans
     noto-fonts-emoji
     cantarell-fonts
     dejavu_fonts
@@ -233,11 +250,12 @@
   # nixos-unstable nvidia-open does not include nvidia-* commands which breaks everything
 
 
-  services.picom.vSync = true;
+  # services.picom.vSync = true;
   hardware = {
     nvidia = {
-      open = true;
+      open = false; # the open source drivers suck balls
       package = config.boot.kernelPackages.nvidiaPackages.production;
+      #package = config.boot.kernelPackages.nvidiaPackages.stable; # 560 Driver
       nvidiaSettings = true;
       powerManagement.enable = true;
       powerManagement.finegrained = true;
@@ -281,5 +299,4 @@
       };
     };
   };
-
 }

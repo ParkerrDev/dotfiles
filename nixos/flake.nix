@@ -1,28 +1,39 @@
 {
-  description = "Nixos config flake";
+  description = "Nixos flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # stylix.url = "github:danth/stylix";
-    # nix-flatpak.url = "github:gmodena/nix-flatpak";
-
-    # ags.url = "github:Aylur/ags";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "nixpkgs/nixos-24.05";
 
     home-manager = {
-      # url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: {
-    nixosConfigurations.default = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
-      modules = [
-        # nix-flatpak.nixosModules.nix-flatpak
-        ./configuration.nix
-        # inputs.stylix.nixosModules.stylix
-        inputs.home-manager.nixosModules.default
-      ];
+  outputs = { self, nixpkgs, nixpkgs-stable, home-manager, ... }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+      unstable = import nixpkgs { inherit system; config.allowUnfree = true; };
+      stable = import nixpkgs-stable { inherit system; config.allowUnfree = true; };
+    in {
+      nixosConfigurations.default = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {
+          inherit unstable;
+          inherit stable;
+        };
+        modules = [
+          ./configuration.nix
+          home-manager.nixosModules.default
+          {
+            # Import the Windscribe module directly
+            # imports = [ ./modules/windscribe ];
+            # Enable nixpkgs config
+            nixpkgs.config.allowUnfree = true;
+          }
+        ];
+      };
     };
-  };
 }

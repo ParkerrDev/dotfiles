@@ -16,24 +16,14 @@ pkgs: with pkgs;[
   #hfsprogs # Used for HFS with Gparted
   ntfsprogs # Used for NTSG with Gparted
 
-  # Asus ROG Strix (Patches) (keeping out of superstition that it increases performance)
-  sof-firmware # trying to fix sound
-  jack2 # trying to fix sound
-  linuxKernel.packages.linux_xanmod_latest.nct6687d
-  linuxKernel.packages.linux_xanmod_latest.asus-ec-sensors
-  # linuxKernel.packages.linux_6_9.asus-ec-sensors
-  linuxKernel.packages.linux_lqx.asus-ec-sensors
-  linuxKernel.packages.linux_zen.asus-ec-sensors
-  asusctl
-  alsa-utils # cli sound and audio utils
-
-  # Vitualization
-
-  # VBoxManage internalcommands createrawvmdk -filename /home/parker/VBOX/Win11VirtualXtraDisk.vmdk -rawdisk /dev/nvme1n1 -partitions 1
-
-  #virtualbox
-  # qemu
-  # OVMF
+  # Hardware Control
+  # asusctl
+  # supergfxctl
+  piper
+  libratbag
+  g810-led
+  ddcutil
+  i2c-tools # required by ddcutil
 
   # Hyprland
   wofi
@@ -44,7 +34,7 @@ pkgs: with pkgs;[
   swaybg
   wdisplays
   networkmanagerapplet
-  brightnessctl
+  # brightnessctl
   playerctl
   pamixer
   #dunst
@@ -52,6 +42,7 @@ pkgs: with pkgs;[
   pavucontrol
   grim # screenshots
   slurp
+  hyprshot
   wtype
   wl-clipboard
   pipewire
@@ -72,18 +63,20 @@ pkgs: with pkgs;[
   qbittorrent
   ytdownloader
   wireguard-tools #VPNs
+  openvpn # VPNs
   motrix
   rpi-imager
   easyeffects # Equalizer
   zed-editor
-  thunderbird
-  protonvpn-gui
-  session-desktop # private messenger (not working)
-  briar-desktop # offline p2p e2ee tor messenger (not working)
+  #thunderbird
+  #protonvpn-gui
+  #session-desktop # private messenger (not working)
+  #briar-desktop # offline p2p e2ee tor messenger (not working)
   github-desktop
   gimp
-  figma-linux
-  bambu-studio
+  #figma-linux
+  #bambu-studio
+  #dolphin-emu
 
   # Hacking
   aircrack-ng
@@ -115,15 +108,6 @@ pkgs: with pkgs;[
   #Unreal Projects
   #nodejs
 
-  # Hardware Control
-  asusctl
-  supergfxctl
-  piper
-  libratbag
-  g810-led
-  ddcutil
-  i2c-tools # required by ddcutil
-
   # Command Line Tools
   blesh # ble.sh
   atuin
@@ -148,11 +132,12 @@ pkgs: with pkgs;[
   baobab
   gparted
   vlc
+  realvnc-vnc-viewer
 
   # rust ebook project
-  cargo
-  rustup
-  rustc
+  # cargo
+  # rustup
+  # rustc
 
   #NeuraLink Compression Challenge
   flac

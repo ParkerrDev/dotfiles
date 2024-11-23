@@ -1,6 +1,6 @@
-{config, pkgs, ... }: {
+{ config, pkgs, ... }: {
   services.dunst = {
-    package = pkgs.dunst; 
+    package = pkgs.dunst;
     enable = true;
     settings = {
       global = {
@@ -13,9 +13,9 @@
         show_age_threshold = 60;
         word_wrap = "yes";
         ignore_newline = "no";
-        stack_duplicates = "false";
+        stack_duplicates = false;
         hide_duplicate_count = "yes";
-        corner_radius=15;
+        corner_radius = 15;
         width = "280";
         height = "50-10";
         offset = "10x30";
@@ -31,15 +31,15 @@
         padding = 20;
         horizontal_padding = 20;
         separator_color = "auto";
-        startup_notification = "true";
+        startup_notification = true;
         browser = "x-www-browser -new-tab";
-        always_run_script = "true";
+        always_run_script = true;
         title = "Dunst";
         class = "Dunst";
         icon_position = "left";
-        min_icon_size = "32";
-        max_icon_size = "56";
-        frame_width = "0";
+        min_icon_size = 32;
+        max_icon_size = 56;
+        frame_width = 0;
       };
 
       shortcuts = {
@@ -49,93 +49,20 @@
         context = "ctrl+shift+period";
       };
 
-      urgency-normal = {
-        /* Tokyo Night */
-        /* frame_color = "#7aa2f7";
-        foreground = "#7aa2f7";
-        background = "#1a1b26";
-        timeout = 5; /
-
-        /* Catppuccin */
-        /*frame_color = "#89b4fa";
-        foreground = "#89b4fa";
-        background = "#181825";
-        timeout = 5;*/
-        
-        /* Kanagawa */
-        /* frame_color = "#7aa89f";
-        foreground = "#7aa89f";
-        background = "#1f1f28";
-        timeout = 5; */
-
-        /* Gruvbox */
-        /* frame_color = "#8ec07c";
-        foreground = "#8ec07c";
-        background = "#1d2021"; 
-        timeout = 5; */
-
-        /* Oxocarbon */ 
-        /* frame_color = "#3ddbd9";
-        foreground = "#3ddbd8";
-        background = "#161616"; 
-        timeout = 5; */
-
-        /* Decay */
-        /* frame_color = "#8baff1"; 
-        foreground = "#8baff1";
-        background = "#0d0f18"; 
-        timeout = 5; */ 
-
-        /* Everblush */ 
-        frame_color = ""; 
+      urgency_normal = {
+        frame_color = "#ffffff";
         foreground = "#ffffff";
-        background = "#ffffff1a"; 
-        timeout = 5; 
-
+        background = "#ffffff1a";
+        timeout = 5;
+        frame_width = 0;
       };
 
-      urgency-critical = {
-        /* Tokyo Night */
-        /* frame_color = "#E06C75";
-        foreground = "#E06C75";
-        background = "#1a1b26";
-        timeout = 5; */
-        
-        /* Catppuccin */
-        /*frame_color = "#f38ba8";
-        foreground = "#f38ba8";
-        background = "#181825";
-        timeout = 5;*/
-
-        /* Kanagawa */
-        /* frame_color = "#c34043";
-        foreground = "#c34043";
-        background = "#1f1f28";
-        timeout = 5;*/
-
-        /* Gruvbox */
-        /* frame_color = "#cc2d1d";
-        foreground = "#cc2d1d";
-        background = "#1d2021"; 
-        timeout = 5;*/
-
-        /* Oxocarbon */ 
-        /* frame_color = "#ee5396";
-        foreground = "#ee5396";
-        background = "#161616"; 
-        timeout = 5;*/
-
-        /* Decay */
-        /* frame_color = "#e26c7c"; 
-        foreground = "#e26c7c";
-        background = "#0d0f18"; 
-        timeout = 5;*/
-
-        /* Everblush */ 
-        frame_color = "rgba(0, 0, 0, 0.25)"; 
-        foreground = "rgba(0, 0, 0, 0.25)";
-        background = "rgba(0, 0, 0, 0.25)"; 
-        timeout = 5; 
+      urgency_critical = {
+        frame_color = "rgba(0, 0, 0, 1)";
+        foreground = "rgba(0, 0, 0, 1)";
+        background = "rgba(, 0, 0, 1)";
+        timeout = 5;
+        frame_width = 0;
       };
     };
   };
