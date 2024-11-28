@@ -4,13 +4,14 @@ with lib;
 
 let
   cfg = config.services.windscribe;
-in {
+in
+{
   options.services.windscribe = {
     enable = mkEnableOption "Windscribe VPN";
-    
+
     package = mkOption {
       type = types.package;
-      default = pkgs.callPackage ./package.nix {};
+      default = pkgs.callPackage ./package.nix { };
       description = "The Windscribe package to use.";
     };
 
@@ -23,11 +24,11 @@ in {
 
   config = mkIf cfg.enable {
     nixpkgs.config.allowUnfree = true;
-    
+
     environment.systemPackages = [ cfg.package ];
 
     systemd.packages = [ cfg.package ];
-    
+
     networking.networkmanager.enable = true;
 
     security.polkit.enable = true;

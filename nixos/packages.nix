@@ -4,8 +4,9 @@ pkgs: with pkgs;[
   mypackages.mt7961 # must disable gigabyte ethernet to work
 
   # Nix OS
-  #home-manager
-  nixfmt-classic # Nix formatter
+  home-manager
+  #nixfmt-classic # Nix formatter
+  nixpkgs-fmt
   nil # language server protocol
   lxqt.lxqt-policykit # Polkit authentication
   libimobiledevice # iPhone File Support
@@ -28,7 +29,7 @@ pkgs: with pkgs;[
   # Hyprland
   wofi
   waybar
-  wlogout
+  # wlogout # defined in home manager
   gammastep
   swaylock-effects
   swaybg
@@ -51,6 +52,7 @@ pkgs: with pkgs;[
 
   # Look and Feel
   ags
+  libnotify # required by ags
   adw-gtk3
   libdbusmenu-gtk3
 
@@ -121,7 +123,7 @@ pkgs: with pkgs;[
   tree
   proxychains
   imagemagick
-  calibre
+  # calibre
   unzip
   ipatool
   dpkg

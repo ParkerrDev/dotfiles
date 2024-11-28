@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, stable, unstable, ... }:
+{ config, pkgs, lib, inputs, unstable, stable, ... }:
 
 {
   imports = [
@@ -7,15 +7,15 @@
   ];
 
   # System State Version
-  system.stateVersion = "24.05";
+  system.stateVersion = "24.11";
 
   # Nix Settings
   nix.settings.experimental-features = [ "nix-command" "flakes" ]; # Nix Flakes
 
 
   # DDCUTIL Brightness Control
-  users.groups.i2c = {};
-  boot.kernelModules = ["i2c-dev"];
+  users.groups.i2c = { };
+  boot.kernelModules = [ "i2c-dev" ];
   services.udev.extraRules = ''
     SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0777"
   '';
@@ -34,7 +34,7 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.extraModprobeConfig = ''
-  options snd-intel-dspcfg dsp_driver=1
+    options snd-intel-dspcfg dsp_driver=1
   '';
   # boot.initrd.availableKernelModules = [ "mt76x2u" ];
   # # boot.extraModulePackages = [ pkgsmypackages.mt7961 ];
@@ -42,7 +42,7 @@
 
   #Virtualization
 
-  users.extraGroups.docker.members = [ "parker"];
+  users.extraGroups.docker.members = [ "parker" ];
   virtualisation.docker.enable = true;
   virtualisation.docker.rootless = {
     enable = true;
@@ -140,12 +140,12 @@
   users.users.parker = {
     isNormalUser = true;
     description = "Parker";
-    extraGroups = [ "networkmanager" "wheel" "i2c" "asusd"];  # Added input and video groups
-    packages = with pkgs; [ stable.brightnessctl ];
+    extraGroups = [ "networkmanager" "wheel" "i2c" "asusd" ]; # Added input and video groups
+    packages = with pkgs; [ brightnessctl ];
   };
 
   # Create asusd group
-  users.groups.asusd = {};
+  users.groups.asusd = { };
 
   home-manager = {
     # also pass inputs to home-manager modules
@@ -177,10 +177,10 @@
 
   hardware.enableAllFirmware = true; # trying to fix sound - didnt fix
 
-  #services.windscribe = {
-  #  enable = true;
-  #  autoStart = true;  # Optional: set to false if you don't want it to start automatically
-  # };
+  services.windscribe = {
+   enable = true;
+   autoStart = true;  # Optional: set to false if you don't want it to start automatically
+  };
 
 
   # Bluetooth and blueman-applet
@@ -209,7 +209,7 @@
     #ALL_PROXY = "http://172.20.10.1:9877";
   };
 
- # Import the packages from packages.nix
+  # Import the packages from packages.nix
   environment.systemPackages = import ./packages.nix pkgs;
 
   # environment.etc."proxychains.conf".text =
@@ -283,10 +283,10 @@
 
   specialisation = {
     ios-proxy.configuration = {
-        networking.proxy.default = "http://172.20.10.1:9877";
-        environment.sessionVariables = {
-            ALL_PROXY = "http://172.20.10.1:9877";
-        };
+      networking.proxy.default = "http://172.20.10.1:9877";
+      environment.sessionVariables = {
+        ALL_PROXY = "http://172.20.10.1:9877";
+      };
     };
     gaming-time.configuration = {
       hardware.nvidia = {

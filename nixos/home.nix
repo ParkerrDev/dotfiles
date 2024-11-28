@@ -1,19 +1,21 @@
 { config, lib, pkgs, inputs, ... }:
 
 {
-  imports = [ 
+  imports = [
     # inputs.ags.homeManagerModules.default
     ./modules/waybar/waybar.nix
-    ./modules/dunst/dunst.nix
-  
-   ];
+    ./modules/wlogout/wlogout.nix
+    ./modules/wofi/wofi.nix
+    # ./modules/dunst/dunst.nix
+
+  ];
 
   home.username = "parker";
   home.homeDirectory = "/home/parker";
-  home.stateVersion = "24.05";
-  home.packages = [];
-  home.file = {};
-  home.sessionVariables = {};
+  home.stateVersion = "24.11";
+  home.packages = [ ];
+  home.file = { };
+  home.sessionVariables = { };
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {
@@ -21,26 +23,26 @@
       gtk-theme = lib.mkForce "Zorin-Mint-Light";
     };
     "org/virt-manager/virt-manager/connections" = {
-      autoconnect = ["qemu:///system"];
-      uris = ["qemu:///system"];
-  };
+      autoconnect = [ "qemu:///system" ];
+      uris = [ "qemu:///system" ];
+    };
   };
 
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
 
-  home.file.".config/gtk-3.0/settings.ini".text = 
-  ''
-  [Settings]
-  gtk-theme-name = Zorin-Mint-Light
-  gtk-application-prefer-dark-theme = true
-  '';
+  home.file.".config/gtk-3.0/settings.ini".text =
+    ''
+      [Settings]
+      gtk-theme-name = Zorin-Mint-Light
+      gtk-application-prefer-dark-theme = true
+    '';
 
-  home.file.".config/gtk-4.0/settings.ini".text = 
-  ''
-  [Settings]
-  gtk-theme-name = Zorin-Mint-Light
-  gtk-application-prefer-dark-theme = true
-  '';
+  home.file.".config/gtk-4.0/settings.ini".text =
+    ''
+      [Settings]
+      gtk-theme-name = Zorin-Mint-Light
+      gtk-application-prefer-dark-theme = true
+    '';
 
   home.pointerCursor = {
     gtk.enable = true;
@@ -63,5 +65,5 @@
   #   ];
   # };
 
-  home.sessionVariables.GTK_THEME = "Zorin-Mint-Light"; 
+  home.sessionVariables.GTK_THEME = "Zorin-Mint-Light";
 }

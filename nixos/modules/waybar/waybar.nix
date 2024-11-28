@@ -1,4 +1,4 @@
-{config, pkgs, ...}: {
+{ config, pkgs, ... }: {
   # Enable waybar
   programs.waybar = {
     enable = true;
@@ -385,25 +385,25 @@
         margin = "8px 10px -2px 10px";
         layer = "top";
 
-        modules-left = ["custom/wmname"  "clock" "hyprland/window"];
-        modules-center = ["hyprland/workspaces"];
-        modules-right = ["custom/ddcutil" "backlight" "pulseaudio" "network" "tray" "battery" "custom/powermenu"];
-      
-      "hyprland/window" = {
-        format = "{title}";
-        max-length = 10;
-        separate-outputs = false;
-      };
+        modules-left = [ "custom/wmname" "clock" "hyprland/window" ];
+        modules-center = [ "hyprland/workspaces" ];
+        modules-right = [ "custom/ddcutil" "backlight" "pulseaudio" "network" "tray" "battery" "custom/powermenu" ];
 
-      /* Modules configuration */
-      "hyprland/workspaces" = {
+        "hyprland/window" = {
+          format = "{title}";
+          max-length = 10;
+          separate-outputs = false;
+        };
+
+        /* Modules configuration */
+        "hyprland/workspaces" = {
           active-only = "false";
           # on-scroll-up = "hyprctl dispatch workspace e+1";
           # on-scroll-down = "hyprctl dispatch workspace e-1";
           # disable-scroll = "false";
           all-outputs = "true";
           format = "{icon}";
-          };
+        };
 
         "idle_inhibitor" = {
           format = "{icon}";
@@ -419,8 +419,8 @@
 
         "clock" = {
           tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-	        format = " {:%I:%M}";
-	        format-alt = " {:%A, %B %d, %Y}";
+          format = " {:%I:%M}";
+          format-alt = " {:%A, %B %d, %Y}";
         };
 
         "cpu" = {
@@ -434,24 +434,24 @@
 
         "backlight" = {
           format = "{icon}{percent}%";
-          format-icons = ["󰃞 " "󰃟 " "󰃠 "];
+          format-icons = [ "󰃞 " "󰃟 " "󰃠 " ];
           on-scroll-up = "brightnessctl set 1%+";
           on-scroll-down = "brightnessctl set 1%-";
         };
 
         "battery" = {
           states = {
-          warning = "30";
-          critical = "15";
-        };
+            warning = "30";
+            critical = "15";
+          };
           format = "{icon}{capacity}%";
           tooltip-format = "{timeTo} {capacity}%";
           format-charging = "󱐋{capacity}%";
           format-plugged = "";
           format-alt = "{time} {icon}";
-          format-icons = ["  " "  " "  " "  " "  "];
+          format-icons = [ "  " "  " "  " "  " "  " ];
         };
-        
+
         "network" = {
           format-wifi = " {essid} {signalStrength}%";
           format-ethernet = "{ifname}: {ipaddr}/{cidr}  ";
@@ -470,13 +470,13 @@
           format-source-muted = " ";
           format-muted = "  {format_source}";
           format-icons = {
-              headphone = " ";
-              hands-free = " ";
-              headset = " ";
-              phone = " ";
-              portable = " ";
-              car = " ";
-              default = [" " " " "  "];
+            headphone = " ";
+            hands-free = " ";
+            headset = " ";
+            phone = " ";
+            portable = " ";
+            car = " ";
+            default = [ " " " " "  " ];
           };
           tooltip-format = "{desc} {volume}%";
           on-click = "pactl set-sink-mute @DEFAULT_SINK@ toggle";
@@ -497,16 +497,16 @@
           on-click = "wlogout";
         };
 
-        "custom/ddcutil" = {
-          type = "custom";
-          exec = "ddcutil -b 13 getvcp 10 -t | perl -nE 'if (/ C (\\d+) /) { say $1; }'";
-          exec-if = "sleep 1.5";
-          format = "{icon} {}%";
-          format-icons = [""];
-          interval = "once";
-          on-scroll-up = "ddcutil -b 13 setvcp 10 + 1";
-          on-scroll-down = "ddcutil -b 13 setvcp 10 - 1";
-        };
+        # "custom/ddcutil" = {
+        #   type = "custom";
+        #   exec = "ddcutil -b 13 getvcp 10 -t | perl -nE 'if (/ C (\\d+) /) { say $1; }'";
+        #   exec-if = "sleep 1.5";
+        #   format = "{icon} {}%";
+        #   format-icons = [ "" ];
+        #   interval = "once";
+        #   on-scroll-up = "ddcutil -b 13 setvcp 10 + 1";
+        #   on-scroll-down = "ddcutil -b 13 setvcp 10 - 1";
+        # };
       };
     };
   };
