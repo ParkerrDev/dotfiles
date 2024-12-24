@@ -52,7 +52,7 @@ pkgs: with pkgs;[
 
   # Look and Feel
   ags
-  libnotify # required by ags
+  #libnotify # required by ags
   adw-gtk3
   libdbusmenu-gtk3
 

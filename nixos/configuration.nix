@@ -7,7 +7,7 @@
   ];
 
   # System State Version
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.05";
 
   # Nix Settings
   nix.settings.experimental-features = [ "nix-command" "flakes" ]; # Nix Flakes
@@ -228,7 +228,9 @@
     dejavu_fonts
     source-code-pro # Default monospace font in 3.32
     source-sans
-    nerdfonts
+    # nerdfonts
+    nerd-fonts._0xproto
+    pkgs.nerd-fonts.droid-sans-mono
     font-awesome_5
   ];
 

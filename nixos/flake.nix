@@ -2,9 +2,10 @@
   description = "Nixos flake";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
+    # nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "nixpkgs/backport-297360-to-release-24.05";
+    nixpkgs-stable.url = "nixpkgs/nixos-24.11";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";

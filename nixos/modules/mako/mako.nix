@@ -2,5 +2,5 @@
   programs.mako = {
     package = pkgs.mako;
     enable = true;
-  }
+  };
 }

@@ -6,13 +6,13 @@
     ./modules/waybar/waybar.nix
     ./modules/wlogout/wlogout.nix
     ./modules/wofi/wofi.nix
-    # ./modules/dunst/dunst.nix
+    # ./modules/mako/mako.nix
 
   ];
 
   home.username = "parker";
   home.homeDirectory = "/home/parker";
-  home.stateVersion = "24.11";
+  home.stateVersion = "25.05";
   home.packages = [ ];
   home.file = { };
   home.sessionVariables = { };
