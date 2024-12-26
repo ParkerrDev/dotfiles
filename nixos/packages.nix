@@ -4,7 +4,7 @@ pkgs: with pkgs;[
   mypackages.mt7961 # must disable gigabyte ethernet to work
 
   # Nix OS
-  home-manager
+  # home-manager
   #nixfmt-classic # Nix formatter
   nixpkgs-fmt
   nil # language server protocol
@@ -77,7 +77,7 @@ pkgs: with pkgs;[
   github-desktop
   gimp
   #figma-linux
-  #bambu-studio
+  # bambu-studio
   #dolphin-emu
 
   # Hacking
