@@ -8,7 +8,7 @@
     nixpkgs-stable.url = "nixpkgs/nixos-24.05";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -16,7 +16,7 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-stable, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
       unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
       stable = import nixpkgs-stable { inherit system; config.allowUnfree = true; };
     in

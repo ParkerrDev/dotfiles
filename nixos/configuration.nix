@@ -7,7 +7,7 @@
   ];
 
   # System State Version
-  system.stateVersion = "25.05";
+  system.stateVersion = "24.11";
 
   # Nix Settings
   nix.settings.experimental-features = [ "nix-command" "flakes" ]; # Nix Flakes
@@ -32,6 +32,8 @@
     "/dev/disk/by-uuid/2cdebd65-326f-46c5-bfa0-753247f43f88";
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # boot.supportedFilesystems = [ "ntfs" ];
 
   boot.extraModprobeConfig = ''
     options snd-intel-dspcfg dsp_driver=1
@@ -140,7 +142,7 @@
   users.users.parker = {
     isNormalUser = true;
     description = "Parker";
-    extraGroups = [ "networkmanager" "wheel" "i2c" "asusd" ]; # Added input and video groups
+    extraGroups = [ "networkmanager" "wheel" "i2c" "asusd" "disk"]; # Added input and video groups
     packages = with pkgs; [ brightnessctl ];
   };
 
@@ -179,8 +181,8 @@
   hardware.enableAllFirmware = true; # trying to fix sound - didnt fix
 
   services.windscribe = {
-   enable = true;
-   autoStart = true;  # Optional: set to false if you don't want it to start automatically
+    enable = true;
+    autoStart = true; # Optional: set to false if you don't want it to start automatically
   };
 
 
@@ -236,7 +238,7 @@
   ];
 
   # Gaming and NVIDIA Configuration
-  services.xserver.videoDrivers = [ "intel" "nvidia" ];
+  # services.xserver.videoDrivers = [ "intel" "nvidia" ];
 
   # hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
   #   version = "550.78";
@@ -254,6 +256,10 @@
 
 
   # services.picom.vSync = true;
+
+
+  services.xserver.videoDrivers = [ "nvidia" ];
+
   hardware = {
     nvidia = {
       open = false; # the open source drivers suck balls
@@ -280,6 +286,9 @@
         vaapiVdpau
         libvdpau-va-gl
         nvidia-vaapi-driver
+        # new
+        intel-media-driver
+        intel-vaapi-driver
       ];
     };
   };
@@ -302,4 +311,11 @@
       };
     };
   };
+
+  # environment.sessionVariables = { LIBVA_DRIVER_NAME = "iHD"; };
+
+  nixpkgs.config.packageOverrides = pkgs: {
+    intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
+  };
+
 }

@@ -12,7 +12,7 @@
 
   home.username = "parker";
   home.homeDirectory = "/home/parker";
-  home.stateVersion = "25.05";
+  home.stateVersion = "24.11";
   home.packages = [ ];
   home.file = { };
   home.sessionVariables = { };

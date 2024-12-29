@@ -76,8 +76,9 @@ pkgs: with pkgs;[
   #briar-desktop # offline p2p e2ee tor messenger (not working)
   github-desktop
   gimp
-  #figma-linux
-  # bambu-studio
+  #freecad-wayland
+  #figma-linux #kinda broken
+  bambu-studio #broken on unstable as of 2025-12-28
   #dolphin-emu
 
   # Hacking
@@ -89,7 +90,7 @@ pkgs: with pkgs;[
   macchanger
   reaverwps-t6x
   crunch
-  cewl
+  # cewl
 
   # Gaming
   protonup-qt
@@ -123,11 +124,13 @@ pkgs: with pkgs;[
   tree
   proxychains
   imagemagick
+  ffmpeg # video utility required by imagemagick 
   # calibre
   unzip
   ipatool
   dpkg
   patchelf
+  conky #system usage monitor
 
   # Graphical Utilities
   nautilus
@@ -152,6 +155,10 @@ pkgs: with pkgs;[
   cmake
   xorg.xhost # manage xhost perms
   (ollama.override { acceleration = "cuda"; })
-  nodejs_22 # npm for electron apps
+  # nodejs_22 # npm for electron apps
   wireplumber # not sure what i used this for
+
+
+
+  ntfs3g # trying to mount ntfs drives and polkit
 ]
