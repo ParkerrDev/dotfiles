@@ -20,6 +20,8 @@
     SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0777"
   '';
 
+  services.hardware.bolt.enable = true; # Thunderbolt Support
+
   services.udev.enable = true;
   systemd.services.udevd.restartIfChanged = true;
 

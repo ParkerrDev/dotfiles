@@ -97,7 +97,7 @@ pkgs: with pkgs;[
   mangohud
   lutris
   protontricks
-  heroic
+  #heroic
   gamemode
   gamescope
 
@@ -160,5 +160,5 @@ pkgs: with pkgs;[
 
 
 
-  ntfs3g # trying to mount ntfs drives and polkit
+  #ntfs3g # trying to mount ntfs drives and polkit
 ]
