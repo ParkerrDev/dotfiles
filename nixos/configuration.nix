@@ -87,9 +87,9 @@
     proxies = {
       local = {
         enable = true;
-        type = "http";
+        type = "socks5";
         host = "172.20.10.1";
-        port = 9877;
+        port = 9876;
       };
     };
   };
@@ -174,7 +174,12 @@
   services.samba.enable = true; # iPhone File support (i think)
   services.usbmuxd.enable = true; # iPhone File support (i think)
 
-  services.flatpak.enable = true;
+  services.flatpak = {
+    enable = true;
+    packages = [
+      "com.bambulab.BambuStudio"
+    ];
+  };
 
   services.udisks2.enable = true; # Auto detection and mounting of drives
   services.gvfs.enable = true; # Auto detection and mounting of drives
@@ -271,7 +276,7 @@
 
 
   boot.blacklistedKernelModules = [ "nouveau" ];
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = [ "modesetting" "nvidia" ];
 
   hardware = {
     nvidia = { # ( current working ) NVIDIA-SMI 550.142 Driver Version: 550.142 CUDA Version: 12.4

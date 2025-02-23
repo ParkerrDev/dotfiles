@@ -41,7 +41,7 @@ let
     swaybg
     wdisplays
     networkmanagerapplet
-    brightnessctl
+    brightnessctl # very broken
     xorg.xrandr
     playerctl
     pamixer
@@ -81,8 +81,10 @@ let
     # zed-editor
     github-desktop
     gimp
-    betterdiscord-installer
+    # betterdiscord-installer
     obsidian
+    telegram-desktop
+    discord-ptb
   ];
 
   # Hacking tools

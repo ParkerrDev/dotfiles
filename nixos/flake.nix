@@ -2,10 +2,10 @@
   description = "Nixos flake";
 
   inputs = {
-    # nixpkgs.url = "nixpkgs/nixos-24.11";
     nixpkgs.url = "nixpkgs/nixos-24.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/master";
     nixpkgs-stable.url = "nixpkgs/nixos-24.05";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -30,6 +30,7 @@
         modules = [
           ./configuration.nix
           home-manager.nixosModules.default
+          nix-flatpak.nixosModules.nix-flatpak
           {
             # Import the Windscribe module directly
             imports = [ ./modules/windscribe ];

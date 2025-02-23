@@ -24,11 +24,18 @@
               hash = "sha256-iBhhJlA+6J7UH69wmc4WJGMWog0UJoQVFDyLfQio7Po=";
             };
             kernelPatches =
+              with {
+                patch_series = fetchurl {
+                  url = "https://gitlab.com/asus-linux/fedora-kernel/-/raw/rog-6.13/asus-patch-series.patch";
+                  hash = "sha256-itmV5h+s5PDNjrRAPQmde3BSTv68oAjqGFw/0kqz6iY=";
+                };
+              };
+
               [
-                {
-                  name = "0000-asus-patch-series.patch";
-                  patch = ../patches/asus-patch-series.patch;
-                }
+                # {
+                #   name = "0000-asus-patch-series.patch";
+                #   patch = "${patch_series}";
+                # }
                 {
                   name = "0001-acpi-proc-idle-skip-dummy-wait.patch";
                   patch = "${patch_dir}/0001-acpi-proc-idle-skip-dummy-wait.patch";
