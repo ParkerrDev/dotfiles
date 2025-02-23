@@ -1,5 +1,7 @@
 { config, lib, pkgs, inputs, ... }:
-
+let
+  inherit (pkgs) writeShellScript;
+in
 {
   imports = [
     # inputs.ags.homeManagerModules.default
@@ -7,15 +9,20 @@
     ./modules/wlogout/wlogout.nix
     ./modules/wofi/wofi.nix
     # ./modules/mako/mako.nix
-
   ];
 
   home.username = "parker";
   home.homeDirectory = "/home/parker";
   home.stateVersion = "24.11";
-  home.packages = [ ];
+  home.packages = [
+    pkgs.waybar
+  ];
   home.file = { };
-  home.sessionVariables = { };
+  home.sessionVariables = {
+    PRIMARY_MONITOR = "eDP-1";
+  };
+
+  home.enableNixpkgsReleaseCheck = false;
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {
@@ -66,4 +73,10 @@
   # };
 
   home.sessionVariables.GTK_THEME = "Zorin-Mint-Light";
+
+  # Example keybinding (adjust to your window manager)
+  # Example for sxhkd:
+  # super + {equal,minus}
+  #   ${nvidia_brightness_up}/bin/nvidia-brightness-up
+  #   ${nvidia_brightness_down}/bin/nvidia-brightness-down
 }

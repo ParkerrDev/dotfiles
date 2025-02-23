@@ -419,7 +419,7 @@
 
         "clock" = {
           tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-          format = " {:%I:%M}";
+          format = " {:%H:%M}"; #format = " {:%I:%M}"; <-- 12 hour format
           format-alt = " {:%A, %B %d, %Y}";
         };
 
@@ -511,4 +511,3 @@
     };
   };
 }
-

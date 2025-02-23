@@ -3,8 +3,8 @@
 
   inputs = {
     # nixpkgs.url = "nixpkgs/nixos-24.11";
-    nixpkgs.url = "nixpkgs/nixos-unstable";
-    nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/master";
     nixpkgs-stable.url = "nixpkgs/nixos-24.05";
 
     home-manager = {
@@ -17,15 +17,15 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
-      unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
-      stable = import nixpkgs-stable { inherit system; config.allowUnfree = true; };
+      pkgs_unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
+      pkgs_stable = import nixpkgs-stable { inherit system; config.allowUnfree = true; };
     in
     {
-      nixosConfigurations.default = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.strixy = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit unstable;
-          inherit stable;
+          inherit pkgs_unstable;
+          inherit pkgs_stable;
         };
         modules = [
           ./configuration.nix

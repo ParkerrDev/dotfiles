@@ -1,8 +1,9 @@
-{ config, pkgs, lib, inputs, unstable, stable, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
+    ./modules/asus-kernel.nix
     ./pkgs
   ];
 
@@ -15,12 +16,13 @@
 
   # DDCUTIL Brightness Control
   users.groups.i2c = { };
+  users.extraGroups.i2c.members = [ "parker" ];
   boot.kernelModules = [ "i2c-dev" ];
   services.udev.extraRules = ''
-    SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0777"
+    SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
 
-  services.hardware.bolt.enable = true; # Thunderbolt Support
+  #services.hardware.bolt.enable = true; # Thunderbolt Support
 
   services.udev.enable = true;
   systemd.services.udevd.restartIfChanged = true;
@@ -33,7 +35,8 @@
   boot.initrd.luks.devices."luks-2cdebd65-326f-46c5-bfa0-753247f43f88".device =
     "/dev/disk/by-uuid/2cdebd65-326f-46c5-bfa0-753247f43f88";
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Pin the kernel version
+  # boot.kernelPackages = pkgs.linuxPackages_6_12;
 
   # boot.supportedFilesystems = [ "ntfs" ];
 
@@ -84,11 +87,17 @@
     proxies = {
       local = {
         enable = true;
-        type = "socks5";
+        type = "http";
         host = "172.20.10.1";
-        port = 9876;
+        port = 9877;
       };
     };
+  };
+
+  programs.git = {
+    enable = true;
+    # userName  = "John Doe";
+    # userEmail = "johndoe@example.com";
   };
 
   # Time and Locale Configuration
@@ -144,16 +153,16 @@
   users.users.parker = {
     isNormalUser = true;
     description = "Parker";
-    extraGroups = [ "networkmanager" "wheel" "i2c" "asusd" "disk"]; # Added input and video groups
-    packages = with pkgs; [ brightnessctl ];
+    extraGroups = [ "networkmanager" "wheel" "i2c" "disk" "video"]; # Added input and video groups
+    # packages = with pkgs; [ rog-control-center ];
   };
 
   # Create asusd group
-  users.groups.asusd = { };
+  # users.groups.asusd = { };
 
   home-manager = {
     # also pass inputs to home-manager modules
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs pkgs; };
     users = { "parker" = import ./home.nix; };
     # package = pkgs.home-manager;
   };
@@ -170,17 +179,12 @@
   services.udisks2.enable = true; # Auto detection and mounting of drives
   services.gvfs.enable = true; # Auto detection and mounting of drives
 
-  services.asusd = {
-    enable = true;
-    enableUserService = true;
-    package = stable.asusctl;
-  };
   services.supergfxd.enable = true;
   systemd.services.supergfxd.path = [ pkgs.pciutils ];
 
   services.ratbagd.enable = true; # Piper Mouse Configuration
 
-  hardware.enableAllFirmware = true; # trying to fix sound - didnt fix
+  #hardware.enableAllFirmware = true; # trying to fix sound - didnt fix
 
   services.windscribe = {
     enable = true;
@@ -211,11 +215,17 @@
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use Wayland. Must disable hardware acceleration to work properly.
     WLR_NO_HARDWARE_CURSORS = "1";
+    FLAKE = "/home/parker/Desktop/dotfiles/nixos";
     #ALL_PROXY = "http://172.20.10.1:9877";
   };
 
   # Import the packages from packages.nix
-  environment.systemPackages = import ./packages.nix pkgs;
+  environment.systemPackages = with pkgs; (
+    (import ./packages.nix { inherit pkgs; }) ++ [
+      libglvnd
+      pkgs.ddcutil
+    ]
+  );
 
   # environment.etc."proxychains.conf".text =
   # ''
@@ -233,9 +243,9 @@
     dejavu_fonts
     source-code-pro # Default monospace font in 3.32
     source-sans
-    # nerdfonts
-    nerd-fonts._0xproto
-    pkgs.nerd-fonts.droid-sans-mono
+    nerdfonts
+    #nerd-fonts._0xproto
+    #pkgs.nerd-fonts.droid-sans-mono
     font-awesome_5
   ];
 
@@ -257,20 +267,28 @@
   # nixos-unstable nvidia-open does not include nvidia-* commands which breaks everything
 
 
-  # services.picom.vSync = true;
+  services.picom.vSync = true;
 
 
+  boot.blacklistedKernelModules = [ "nouveau" ];
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware = {
-    nvidia = {
+    nvidia = { # ( current working ) NVIDIA-SMI 550.142 Driver Version: 550.142 CUDA Version: 12.4
       open = false; # the open source drivers suck balls
-      package = config.boot.kernelPackages.nvidiaPackages.production;
-      #package = config.boot.kernelPackages.nvidiaPackages.stable; # 560 Driver
+      # package = config.boot.kernelPackages.nvidiaPackages.production; # 550 Driver
+      package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+        version = "570.86.16";
+        sha256_64bit = "sha256-RWPqS7ZUJH9JEAWlfHLGdqrNlavhaR1xMyzs8lJhy9U=";
+        openSha256 = "sha256-DuVNA63+pJ8IB7Tw2gM4HbwlOh1bcDg2AN2mbEU9VPE=";
+        settingsSha256 = "sha256-9rtqh64TyhDF5fFAYiWl3oDHzKJqyOW3abpcf2iNRT8=";
+        usePersistenced = false;
+      };
       nvidiaSettings = true;
       powerManagement.enable = true;
       powerManagement.finegrained = true;
       modesetting.enable = true;
+      dynamicBoost.enable = true;
       prime = {
         offload = {
           enable = true;
@@ -288,7 +306,6 @@
         vaapiVdpau
         libvdpau-va-gl
         nvidia-vaapi-driver
-        # new
         intel-media-driver
         intel-vaapi-driver
       ];
@@ -316,8 +333,8 @@
 
   # environment.sessionVariables = { LIBVA_DRIVER_NAME = "iHD"; };
 
-  nixpkgs.config.packageOverrides = pkgs: {
-    intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
-  };
+  #nixpkgs.config.packageOverrides = pkgs: {
+  #  intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
+  #};
 
 }
