@@ -10,32 +10,32 @@
         buildLinux (
           args
           // rec {
-            version = "6.13.2-arch1";
+            version = "6.13.4-arch1";
             modDirVersion = version;
 
             patch_dir = fetchgit {
               url = "https://aur.archlinux.org/linux-g14.git";
-              rev = "98b878245815c15420385f04cf5f3061314d06b0";
-              hash = "sha256-BEteBZx1pio9Q+FqPsLR+I229ZqBk3QFravNle51XWc=";
+              rev = "76e04dff04c523764147404b5b5517d7e421f405";
+              hash = "sha256-pb0BunCAUVk/lXiM9JqUL2v2hnfRzS4+GRr6ygCOUes=";
             };
 
             src = fetchzip {
               url = "https://github.com/archlinux/linux/archive/refs/tags/v${version}.tar.gz";
-              hash = "sha256-iBhhJlA+6J7UH69wmc4WJGMWog0UJoQVFDyLfQio7Po=";
+              hash = "sha256-RcwPPLkS8fKF5sUCfScO9qHiBYSUAb3Hd1sEgrHM1i4=";
             };
             kernelPatches =
               with {
                 patch_series = fetchurl {
-                  url = "https://gitlab.com/asus-linux/fedora-kernel/-/raw/rog-6.13/asus-patch-series.patch";
+                  url = "https://gitlab.com/asus-linux/fedora-kernel/-/raw/e886db7f6a8c91a410fc7c24d79f48ea8ae6d6eb/asus-patch-series.patch";
                   hash = "sha256-itmV5h+s5PDNjrRAPQmde3BSTv68oAjqGFw/0kqz6iY=";
                 };
               };
 
               [
-                # {
-                #   name = "0000-asus-patch-series.patch";
-                #   patch = "${patch_series}";
-                # }
+                {
+                  name = "0000-asus-patch-series.patch";
+                  patch = "${patch_series}";
+                }
                 {
                   name = "0001-acpi-proc-idle-skip-dummy-wait.patch";
                   patch = "${patch_dir}/0001-acpi-proc-idle-skip-dummy-wait.patch";
