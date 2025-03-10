@@ -3,9 +3,10 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-24.11";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/master";
+    nixpkgs-unstable.url = "github:kamokuma5/nixpkgs/personal_mods";
     nixpkgs-stable.url = "nixpkgs/nixos-24.05";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    hyprland.url = "github:hyprwm/Hyprland";
 
     home-manager = {
       url = "github:nix-community/home-manager";

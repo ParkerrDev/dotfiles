@@ -14,7 +14,7 @@ let
   nixosPackages = [
     nixpkgs-fmt
     nil                # language server protocol
-    lxqt.lxqt-policykit  # Polkit authentication
+    # lxqt.lxqt-policykit  # Polkit authentication
     libimobiledevice   # iPhone File Support
     gnome.gvfs         # iPhone File Support2
     ifuse              # iPhone File Support
@@ -34,15 +34,24 @@ let
 
   # Hyprland-related packages
   hyprland = [
+    hyprpolkitagent
+    hyprcursor
+    hyprpaper
+    hyprpicker
+    hypridle
+    hyprlock
+    hyprsunset
+    hyprlang
     wofi
     waybar
-    gammastep
-    swaylock-effects
-    swaybg
+    # gammastep
+    # swaylock-effects
+    # swaybg
     wdisplays
     networkmanagerapplet
-    brightnessctl # very broken
-    xorg.xrandr
+    #brightnessctl # very broken
+    brillo # replaces brightnessctl for now
+    # xorg.xrandr
     playerctl
     pamixer
     mako
@@ -69,7 +78,7 @@ let
     brave
     notesnook
     vscode-fhs # changed from vscode to vscode-fhs
-    code-cursor
+    # code-cursor
     obs-studio
     qbittorrent
     ytdownloader
@@ -132,6 +141,9 @@ let
     patchelf
     discordchatexporter-cli
     btop
+
+    libva-utils
+    pciutils
   ];
 
   # Graphical utilities

@@ -94,11 +94,9 @@
     };
   };
 
-  programs.git = {
-    enable = true;
-    # userName  = "John Doe";
-    # userEmail = "johndoe@example.com";
-  };
+  # programs.git = {
+  #   enable = true;
+  # };
 
   # Time and Locale Configuration
   time.timeZone = "America/Los_Angeles";
@@ -184,8 +182,8 @@
   services.udisks2.enable = true; # Auto detection and mounting of drives
   services.gvfs.enable = true; # Auto detection and mounting of drives
 
-  services.supergfxd.enable = true;
-  systemd.services.supergfxd.path = [ pkgs.pciutils ];
+  # services.supergfxd.enable = true;
+  # systemd.services.supergfxd.path = [ pkgs.pciutils ];
 
   services.ratbagd.enable = true; # Piper Mouse Configuration
 
@@ -209,20 +207,16 @@
 
   programs.dconf.enable = true;
   programs.steam.enable = true;
-  programs.gamemode.enable = true;
-
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
+  # programs.gamemode.enable = true;
 
   # Environment Variables
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use Wayland. Must disable hardware acceleration to work properly.
     WLR_NO_HARDWARE_CURSORS = "1";
     FLAKE = "/home/parker/Desktop/dotfiles/nixos";
-    #ALL_PROXY = "http://172.20.10.1:9877";
   };
+
+#  environment.sessionVariables.AQ_DRM_DEVICES = "/dev/dri/card0";
 
   # Import the packages from packages.nix
   environment.systemPackages = with pkgs; (
@@ -272,8 +266,10 @@
   # nixos-unstable nvidia-open does not include nvidia-* commands which breaks everything
 
 
-  services.picom.vSync = true;
+  # services.picom.vSync = true; # compositor with X11 support. Don't know why its in my config.
 
+  # boot.kernelParams = [ "nvidia-drm.fbdev=1" ];
+  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" ];
 
   boot.blacklistedKernelModules = [ "nouveau" ];
   services.xserver.videoDrivers = [ "modesetting" "nvidia" ];
@@ -294,6 +290,7 @@
       powerManagement.finegrained = true;
       modesetting.enable = true;
       dynamicBoost.enable = true;
+      forceFullCompositionPipeline = true;
       prime = {
         offload = {
           enable = true;
@@ -311,6 +308,7 @@
         vaapiVdpau
         libvdpau-va-gl
         nvidia-vaapi-driver
+        vaapiIntel  # i965 driver (older fallback)
         intel-media-driver
         intel-vaapi-driver
       ];
@@ -336,10 +334,8 @@
     };
   };
 
-  # environment.sessionVariables = { LIBVA_DRIVER_NAME = "iHD"; };
-
-  #nixpkgs.config.packageOverrides = pkgs: {
-  #  intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
-  #};
+  nixpkgs.config.packageOverrides = pkgs: {
+   intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
+  };
 
 }
