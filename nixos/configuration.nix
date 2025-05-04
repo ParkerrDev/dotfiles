@@ -17,7 +17,7 @@
   # DDCUTIL Brightness Control
   users.groups.i2c = { };
   users.extraGroups.i2c.members = [ "parker" ];
-  boot.kernelModules = [ "i2c-dev" ];
+  boot.kernelModules = [ "i2c-dev" "asus_nb_wmi" ];
   services.udev.extraRules = ''
     SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
@@ -117,10 +117,12 @@
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   xdg.portal.config.common.default = "gtk";
 
+  # services.xserver.desktopManager.gnome.enable = true;
+
   # X11 and Display Manager Configuration
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
-  # services.xserver.desktopManager.gnome.enable = true;
+  #services.xserver.displayManager.gdm.wayland = lib.mkForce false; #AI trying to fix rog-control-center
 
   services.xserver.xkb.layout = "us";
   services.xserver.xkb.variant = "";
@@ -146,7 +148,7 @@
 
   # Printing Configuration
   services.printing.enable = true;
-
+  services.dbus.enable = true;
   # User Configuration
   users.users.parker = {
     isNormalUser = true;
@@ -154,9 +156,6 @@
     extraGroups = [ "networkmanager" "wheel" "i2c" "disk" "video"]; # Added input and video groups
     # packages = with pkgs; [ rog-control-center ];
   };
-
-  # Create asusd group
-  # users.groups.asusd = { };
 
   home-manager = {
     # also pass inputs to home-manager modules
@@ -176,6 +175,9 @@
     enable = true;
     packages = [
       "com.bambulab.BambuStudio"
+      "com.brave.Browser"
+      "com.revolutionarygamesstudio.ThriveLauncher"
+      "app.zen_browser.zen"
     ];
   };
 
@@ -194,6 +196,8 @@
     autoStart = true; # Optional: set to false if you don't want it to start automatically
   };
 
+  nix.settings.trusted-users = ["parker"];
+
 
   # Bluetooth and blueman-applet
   hardware.bluetooth.enable = true;
@@ -205,6 +209,13 @@
   # stylix.image = /home/parker/Pictures/52259221868_3d2963c1fe_o.png;
   # stylix.polarity = "dark";
 
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+    # extraConfig = builtins.readFile (toString ./hyprland.conf);
+  };
+
+
   programs.dconf.enable = true;
   programs.steam.enable = true;
   # programs.gamemode.enable = true;
@@ -213,8 +224,11 @@
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use Wayland. Must disable hardware acceleration to work properly.
     WLR_NO_HARDWARE_CURSORS = "1";
-    FLAKE = "/home/parker/Desktop/dotfiles/nixos";
+    NH_FLAKE = "/home/parker/Desktop/dotfiles/nixos"; # updated from FLAKE to NH_FLAKE for home-manager 4.0.3
+    # DISPLAY = ":1";
   };
+
+  environment.variables.LD_LIBRARY_PATH = lib.mkForce (with pkgs; lib.makeLibraryPath [libxkbcommon]); # force to avoid conflicting definitions
 
 #  environment.sessionVariables.AQ_DRM_DEVICES = "/dev/dri/card0";
 
@@ -242,9 +256,9 @@
     dejavu_fonts
     source-code-pro # Default monospace font in 3.32
     source-sans
-    nerdfonts
-    #nerd-fonts._0xproto
-    #pkgs.nerd-fonts.droid-sans-mono
+    #nerdfonts
+    nerd-fonts._0xproto
+    pkgs.nerd-fonts.droid-sans-mono
     font-awesome_5
   ];
 
@@ -269,7 +283,7 @@
   # services.picom.vSync = true; # compositor with X11 support. Don't know why its in my config.
 
   # boot.kernelParams = [ "nvidia-drm.fbdev=1" ];
-  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" ];
+  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" "acpi_backlight=native"]; # acpi_backlight=native is required for brightnessctl to work
 
   boot.blacklistedKernelModules = [ "nouveau" ];
   services.xserver.videoDrivers = [ "modesetting" "nvidia" ];
@@ -336,6 +350,16 @@
 
   nixpkgs.config.packageOverrides = pkgs: {
    intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
+  };
+
+  # Add user service definition for asusd
+  systemd.user.services.asusd = lib.mkIf config.services.asusd.enableUserService {
+    description = "ASUS Notebook Control (user)";
+    wants = [ "dbus-user-session.service" ];
+    after = [ "dbus-user-session.service" ];
+    serviceConfig.ExecStart = "${config.services.asusd.package}/bin/asusd";
+    serviceConfig.Restart = "on-failure";
+    wantedBy = [ "default.target" ];
   };
 
 }

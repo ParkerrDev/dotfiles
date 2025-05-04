@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, outputs, pkgs_unstable, ... }:
+{ config, pkgs, lib, inputs, outputs, pkgs_unstable, pkgs_stable, ... }:
 
 {
   # ASUS G14 Patched Kernel based off of Arch Linux Kernel
@@ -91,7 +91,7 @@
     # Default to using iGPU. Can use CLI to enable dGPU with a logout
     supergfxd.enable = true;
     supergfxd.settings = {
-      mode = "Integrated";
+      mode = "Dedicated";
       vfio_enable = true;
       vfio_save = false;
       always_reboot = false;
@@ -104,7 +104,7 @@
     asusd = {
       enable = true;
       enableUserService = true;
-      package = pkgs_unstable.asusctl;
+      package = pkgs.asusctl;
     };
 
     # Dependency of asusd

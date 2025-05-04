@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs}:
 with pkgs;
 let
   # Use pkgs.rog-control-center instead of rog-control-center directly
@@ -21,6 +21,7 @@ let
     steam-run          # Run dynamically linked executables
     appimage-run       # Run app images
     ntfsprogs          # Used for NTFS with Gparted
+    home-manager
   ];
 
   # Hardware control tools
@@ -30,6 +31,8 @@ let
     g810-led
     ddcutil
     i2c-tools  # required by ddcutil
+    cudaPackages.cudatoolkit
+    asusctl
   ];
 
   # Hyprland-related packages
@@ -42,6 +45,7 @@ let
     hyprlock
     hyprsunset
     hyprlang
+    aquamarine
     wofi
     waybar
     # gammastep
@@ -49,7 +53,7 @@ let
     # swaybg
     wdisplays
     networkmanagerapplet
-    #brightnessctl # very broken
+    brightnessctl # very broken
     brillo # replaces brightnessctl for now
     # xorg.xrandr
     playerctl
@@ -75,7 +79,9 @@ let
   # Personal applications
   personal = [
     kitty
-    brave
+    brave #chromium broken on wayland with hybrid GPU and HiDPI
+    ladybird
+    # inputs.zen-browser.packages."${system}".specific
     notesnook
     vscode-fhs # changed from vscode to vscode-fhs
     # code-cursor
@@ -91,7 +97,6 @@ let
     github-desktop
     gimp
     # betterdiscord-installer
-    obsidian
     telegram-desktop
     discord-ptb
   ];
@@ -99,7 +104,9 @@ let
   # Hacking tools
   hacking = [
     aircrack-ng
-    hashcat
+    (hashcat.overrideAttrs (old: {
+      nativeBuildInputs = old.nativeBuildInputs or [] ++ [ autoAddDriverRunpath ];
+    }))
     hashcat-utils
     wireshark
     hcxtools
@@ -136,14 +143,15 @@ let
     imagemagick
     ffmpeg    # required by imagemagick 
     unzip
-    ipatool
-    dpkg
+    ipatool 
+    dpkg 
     patchelf
     discordchatexporter-cli
     btop
-
     libva-utils
-    pciutils
+    pciutils 
+    fabric-ai # fabric-cli (ai tool)
+    lynx # text browser
   ];
 
   # Graphical utilities
@@ -160,11 +168,13 @@ let
     gh           # GitHub CLI
     SDL2
     gcc
+    llvm
     gnumake
     cmake
     xorg.xhost   # manage xhost perms
     (ollama.override { acceleration = "cuda"; })
     nodejs_22    # npm for electron apps
+    pnpm
     wireplumber  # not sure what it is used for
     devenv
   ];
