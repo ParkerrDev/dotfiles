@@ -104,7 +104,7 @@
     asusd = {
       enable = true;
       enableUserService = true;
-      package = pkgs.asusctl;
+      package = pkgs_stable.asusctl;
     };
 
     # Dependency of asusd

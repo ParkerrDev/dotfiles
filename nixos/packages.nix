@@ -1,4 +1,4 @@
-{ pkgs}:
+{ pkgs }:
 with pkgs;
 let
   # Use pkgs.rog-control-center instead of rog-control-center directly
@@ -13,14 +13,14 @@ let
   # NixOS-specific packages
   nixosPackages = [
     nixpkgs-fmt
-    nil                # language server protocol
+    nil # language server protocol
     # lxqt.lxqt-policykit  # Polkit authentication
-    libimobiledevice   # iPhone File Support
-    gnome.gvfs         # iPhone File Support2
-    ifuse              # iPhone File Support
-    steam-run          # Run dynamically linked executables
-    appimage-run       # Run app images
-    ntfsprogs          # Used for NTFS with Gparted
+    libimobiledevice # iPhone File Support
+    gnome.gvfs # iPhone File Support2
+    ifuse # iPhone File Support
+    steam-run # Run dynamically linked executables
+    appimage-run # Run app images
+    ntfsprogs # Used for NTFS with Gparted
     home-manager
   ];
 
@@ -30,7 +30,7 @@ let
     libratbag
     g810-led
     ddcutil
-    i2c-tools  # required by ddcutil
+    i2c-tools # required by ddcutil
     cudaPackages.cudatoolkit
     asusctl
   ];
@@ -60,7 +60,7 @@ let
     pamixer
     mako
     pavucontrol
-    grim         # screenshots
+    grim # screenshots
     slurp
     hyprshot
     wtype
@@ -92,7 +92,7 @@ let
     openvpn # VPNs
     motrix
     rpi-imager
-    easyeffects    # Equalizer
+    easyeffects # Equalizer
     # zed-editor
     github-desktop
     gimp
@@ -105,7 +105,7 @@ let
   hacking = [
     aircrack-ng
     (hashcat.overrideAttrs (old: {
-      nativeBuildInputs = old.nativeBuildInputs or [] ++ [ autoAddDriverRunpath ];
+      nativeBuildInputs = old.nativeBuildInputs or [ ] ++ [ autoAddDriverRunpath ];
     }))
     hashcat-utils
     wireshark
@@ -127,29 +127,29 @@ let
 
   # Command line tools
   commandLine = [
-    blesh    # ble.sh
+    blesh # ble.sh
     atuin
     neovim
     neofetch
     fastfetch
     git
     nh # nix management utility
-    usbutils  # lsusb
+    usbutils # lsusb
     feh
-    lf        # cli file manager
+    lf # cli file manager
     fzf
     tree
     proxychains
     imagemagick
-    ffmpeg    # required by imagemagick 
+    ffmpeg # required by imagemagick 
     unzip
-    ipatool 
-    dpkg 
+    ipatool
+    dpkg
     patchelf
     discordchatexporter-cli
     btop
     libva-utils
-    pciutils 
+    pciutils
     fabric-ai # fabric-cli (ai tool)
     lynx # text browser
   ];
@@ -165,17 +165,17 @@ let
 
   # Coding and development packages
   coding = [
-    gh           # GitHub CLI
+    gh # GitHub CLI
     SDL2
     gcc
     llvm
     gnumake
     cmake
-    xorg.xhost   # manage xhost perms
+    xorg.xhost # manage xhost perms
     (ollama.override { acceleration = "cuda"; })
-    nodejs_22    # npm for electron apps
+    nodejs_22 # npm for electron apps
     pnpm
-    wireplumber  # not sure what it is used for
+    wireplumber # not sure what it is used for
     devenv
   ];
 

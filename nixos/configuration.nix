@@ -148,12 +148,12 @@
 
   # Printing Configuration
   services.printing.enable = true;
-  services.dbus.enable = true;
+  # services.dbus.enable = true;
   # User Configuration
   users.users.parker = {
     isNormalUser = true;
     description = "Parker";
-    extraGroups = [ "networkmanager" "wheel" "i2c" "disk" "video"]; # Added input and video groups
+    extraGroups = [ "networkmanager" "wheel" "i2c" "disk" "video" ]; # Added input and video groups
     # packages = with pkgs; [ rog-control-center ];
   };
 
@@ -196,7 +196,7 @@
     autoStart = true; # Optional: set to false if you don't want it to start automatically
   };
 
-  nix.settings.trusted-users = ["parker"];
+  nix.settings.trusted-users = [ "parker" ];
 
 
   # Bluetooth and blueman-applet
@@ -228,9 +228,8 @@
     # DISPLAY = ":1";
   };
 
-  environment.variables.LD_LIBRARY_PATH = lib.mkForce (with pkgs; lib.makeLibraryPath [libxkbcommon]); # force to avoid conflicting definitions
+  environment.variables.LD_LIBRARY_PATH = lib.mkForce (with pkgs; lib.makeLibraryPath [ libxkbcommon ]); # Supposedly needed for rog-control-center to work
 
-#  environment.sessionVariables.AQ_DRM_DEVICES = "/dev/dri/card0";
 
   # Import the packages from packages.nix
   environment.systemPackages = with pkgs; (
@@ -239,11 +238,6 @@
       pkgs.ddcutil
     ]
   );
-
-  # environment.etc."proxychains.conf".text =
-  # ''
-  # config here
-  # '';
 
   # Fonts Packages
   fonts.packages = with pkgs; [
@@ -283,13 +277,14 @@
   # services.picom.vSync = true; # compositor with X11 support. Don't know why its in my config.
 
   # boot.kernelParams = [ "nvidia-drm.fbdev=1" ];
-  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" "acpi_backlight=native"]; # acpi_backlight=native is required for brightnessctl to work
+  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" "acpi_backlight=native" ]; # acpi_backlight=native is required for brightnessctl to work
 
   boot.blacklistedKernelModules = [ "nouveau" ];
   services.xserver.videoDrivers = [ "modesetting" "nvidia" ];
 
   hardware = {
-    nvidia = { # ( current working ) NVIDIA-SMI 550.142 Driver Version: 550.142 CUDA Version: 12.4
+    nvidia = {
+      # ( current working ) NVIDIA-SMI 550.142 Driver Version: 550.142 CUDA Version: 12.4
       open = false; # the open source drivers suck balls
       # package = config.boot.kernelPackages.nvidiaPackages.production; # 550 Driver
       package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
@@ -322,7 +317,7 @@
         vaapiVdpau
         libvdpau-va-gl
         nvidia-vaapi-driver
-        vaapiIntel  # i965 driver (older fallback)
+        vaapiIntel # i965 driver (older fallback)
         intel-media-driver
         intel-vaapi-driver
       ];
@@ -349,17 +344,7 @@
   };
 
   nixpkgs.config.packageOverrides = pkgs: {
-   intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
-  };
-
-  # Add user service definition for asusd
-  systemd.user.services.asusd = lib.mkIf config.services.asusd.enableUserService {
-    description = "ASUS Notebook Control (user)";
-    wants = [ "dbus-user-session.service" ];
-    after = [ "dbus-user-session.service" ];
-    serviceConfig.ExecStart = "${config.services.asusd.package}/bin/asusd";
-    serviceConfig.Restart = "on-failure";
-    wantedBy = [ "default.target" ];
+    intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
   };
 
 }
