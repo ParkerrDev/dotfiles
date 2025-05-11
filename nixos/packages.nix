@@ -152,6 +152,7 @@ let
     pciutils
     fabric-ai # fabric-cli (ai tool)
     lynx # text browser
+    thefuck # command line tool to correct mistakes
   ];
 
   # Graphical utilities
@@ -177,6 +178,7 @@ let
     pnpm
     wireplumber # not sure what it is used for
     devenv
+    conda
   ];
 
   # Combine all groups including the optional rogControlCenter
