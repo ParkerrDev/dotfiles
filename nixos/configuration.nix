@@ -27,7 +27,6 @@
   services.udev.enable = true;
   systemd.services.udevd.restartIfChanged = true;
 
-
   # Bootloader Configuration1
   boot.loader.systemd-boot.enable = true;
   boot.loader.timeout = 60;
@@ -215,8 +214,6 @@
     # extraConfig = builtins.readFile (toString ./hyprland.conf);
   };
 
-
-  programs.dconf.enable = true;
   programs.steam.enable = true;
   # programs.gamemode.enable = true;
 
