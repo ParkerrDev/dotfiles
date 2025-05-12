@@ -99,6 +99,7 @@ let
     # betterdiscord-installer
     telegram-desktop
     discord-ptb
+    cmatrix
   ];
 
   # Hacking tools
