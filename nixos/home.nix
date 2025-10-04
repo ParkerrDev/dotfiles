@@ -8,8 +8,7 @@ in
     ./modules/waybar/waybar.nix
     ./modules/wlogout/wlogout.nix
     ./modules/wofi/wofi.nix
-    # ./modules/hypr/hyprland.nix   # Added hyprland module
-    ./modules/mako/mako.nix
+    ./modules/hypr/hyprland.nix   # Added hyprland module
   ];
 
   home.username = "parker";

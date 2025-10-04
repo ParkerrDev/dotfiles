@@ -8,10 +8,28 @@
   ];
 
   # System State Version
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.05";
 
   # Nix Settings
   nix.settings.experimental-features = [ "nix-command" "flakes" ]; # Nix Flakes
+  nix.settings.max-jobs = lib.mkDefault 2;   # limit parallel builds
+  nix.settings.cores = lib.mkDefault 2;      # limit build cores per job
+
+  # Constrain nix-daemon with systemd cgroups to avoid system lockups during builds
+  systemd.slices."nix-daemon" = {
+    sliceConfig = {
+      MemoryHigh = "60%";  # throttle when exceeding this
+      MemoryMax  = "80%";  # hard cap for all builds
+      CPUQuota   = "200%"; # at most ~2 cores across all builds
+    };
+  };
+  systemd.services.nix-daemon.serviceConfig = {
+    Slice = "nix-daemon.slice";
+    OOMScoreAdjust = 500;   # prefer killing builders over the desktop on OOM
+    CPUAccounting = true;
+    IOAccounting = true;
+    MemoryAccounting = true;
+  };
 
 
   # DDCUTIL Brightness Control
@@ -66,8 +84,20 @@
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
 
+  programs.appimage = {
+    enable = true;        # already “on” if you could call appimage-run
+    # optional but nice: lets you run AppImages just by executing them
+    binfmt  = true;
 
-
+    # Wrap the default appimage-run with extra libraries
+    package = pkgs.appimage-run.override {
+      extraPkgs = pkgs: with pkgs; [
+        xorg.libxshmfence        # <- the missing fence library
+        # add more here if BetterDiscord complains about others
+      ];
+    };
+  };
+  
   # virtualisation.virtualbox.host.enable = true; # Causes build failures
   # virtualisation.virtualbox.guest.enable = true;
   # virtualisation.virtualbox.host.enableExtensionPack = true;
@@ -177,6 +207,7 @@
       "com.brave.Browser"
       "com.revolutionarygamesstudio.ThriveLauncher"
       "app.zen_browser.zen"
+      "dev.zed.Zed"
     ];
   };
 
@@ -208,11 +239,12 @@
   # stylix.image = /home/parker/Pictures/52259221868_3d2963c1fe_o.png;
   # stylix.polarity = "dark";
 
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-    # extraConfig = builtins.readFile (toString ./hyprland.conf);
-  };
+   programs.hyprland = {
+     enable = true;
+     xwayland.enable = true;
+     package = pkgs.hyprland;
+     # extraConfig = builtins.readFile (toString ./hyprland.conf);
+   };
 
   programs.steam.enable = true;
   # programs.gamemode.enable = true;
@@ -248,8 +280,7 @@
     source-code-pro # Default monospace font in 3.32
     source-sans
     #nerdfonts
-    nerd-fonts._0xproto
-    pkgs.nerd-fonts.droid-sans-mono
+    (nerdfonts.override { fonts = [ "0xProto" "DroidSansMono" ]; })
     font-awesome_5
   ];
 

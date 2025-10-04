@@ -19,7 +19,7 @@ let
     gnome.gvfs # iPhone File Support2
     ifuse # iPhone File Support
     steam-run # Run dynamically linked executables
-    appimage-run # Run app images
+    #appimage-run # Run app images
     ntfsprogs # Used for NTFS with Gparted
     home-manager
   ];
@@ -48,9 +48,6 @@ let
     aquamarine
     wofi
     waybar
-    # gammastep
-    # swaylock-effects
-    # swaybg
     wdisplays
     networkmanagerapplet
     brightnessctl # very broken
@@ -58,7 +55,6 @@ let
     # xorg.xrandr
     playerctl
     pamixer
-    mako
     pavucontrol
     grim # screenshots
     slurp
@@ -67,6 +63,7 @@ let
     wl-clipboard
     pipewire
     ydotool
+    tesseract
   ];
 
   # Look and feel
@@ -80,7 +77,7 @@ let
   personal = [
     kitty
     brave #chromium broken on wayland with hybrid GPU and HiDPI
-    ladybird
+    #ladybird
     # inputs.zen-browser.packages."${system}".specific
     notesnook
     vscode-fhs # changed from vscode to vscode-fhs
@@ -96,7 +93,7 @@ let
     # zed-editor
     github-desktop
     gimp
-    # betterdiscord-installer
+    betterdiscord-installer
     telegram-desktop
     discord-ptb
     cmatrix
@@ -153,7 +150,7 @@ let
     pciutils
     fabric-ai # fabric-cli (ai tool)
     lynx # text browser
-    thefuck # command line tool to correct mistakes
+    #thefuck # command line tool to correct mistakes
   ];
 
   # Graphical utilities
