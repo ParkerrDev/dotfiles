@@ -1,4 +1,10 @@
-{ config, pkgs, lib, inputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 {
   imports = [
@@ -11,31 +17,36 @@
   system.stateVersion = "25.05";
 
   # Nix Settings
-  nix.settings.experimental-features = [ "nix-command" "flakes" ]; # Nix Flakes
-  nix.settings.max-jobs = lib.mkDefault 2;   # limit parallel builds
-  nix.settings.cores = lib.mkDefault 2;      # limit build cores per job
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ]; # Nix Flakes
+  nix.settings.max-jobs = lib.mkDefault 2; # limit parallel builds
+  nix.settings.cores = lib.mkDefault 2; # limit build cores per job
 
   # Constrain nix-daemon with systemd cgroups to avoid system lockups during builds
   systemd.slices."nix-daemon" = {
     sliceConfig = {
-      MemoryHigh = "60%";  # throttle when exceeding this
-      MemoryMax  = "80%";  # hard cap for all builds
-      CPUQuota   = "200%"; # at most ~2 cores across all builds
+      MemoryHigh = "60%"; # throttle when exceeding this
+      MemoryMax = "80%"; # hard cap for all builds
+      CPUQuota = "200%"; # at most ~2 cores across all builds
     };
   };
   systemd.services.nix-daemon.serviceConfig = {
     Slice = "nix-daemon.slice";
-    OOMScoreAdjust = 500;   # prefer killing builders over the desktop on OOM
+    OOMScoreAdjust = 500; # prefer killing builders over the desktop on OOM
     CPUAccounting = true;
     IOAccounting = true;
     MemoryAccounting = true;
   };
 
-
   # DDCUTIL Brightness Control
   users.groups.i2c = { };
   users.extraGroups.i2c.members = [ "parker" ];
-  boot.kernelModules = [ "i2c-dev" "asus_nb_wmi" ];
+  boot.kernelModules = [
+    "i2c-dev"
+    "asus_nb_wmi"
+  ];
   services.udev.extraRules = ''
     SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
@@ -45,6 +56,7 @@
   services.udev.enable = true;
   systemd.services.udevd.restartIfChanged = true;
 
+  services.openssh.enable = true; # allows other devices to ssh into laptop
   # Bootloader Configuration1
   boot.loader.systemd-boot.enable = true;
   boot.loader.timeout = 60;
@@ -74,30 +86,32 @@
   };
   hardware.nvidia-container-toolkit.enable = true; # enable gpu passtrhough w/ docker
 
-
   virtualisation.docker.daemon.settings = {
     userland-proxy = false;
     experimental = true;
     metrics-addr = "0.0.0.0:9323";
   };
 
+  programs.nano.enable = false; # remove nano (using helix instead)
+
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
 
   programs.appimage = {
-    enable = true;        # already “on” if you could call appimage-run
+    enable = true; # already “on” if you could call appimage-run
     # optional but nice: lets you run AppImages just by executing them
-    binfmt  = true;
+    binfmt = true;
 
     # Wrap the default appimage-run with extra libraries
     package = pkgs.appimage-run.override {
-      extraPkgs = pkgs: with pkgs; [
-        xorg.libxshmfence        # <- the missing fence library
-        # add more here if BetterDiscord complains about others
-      ];
+      extraPkgs =
+        pkgs: with pkgs; [
+          xorg.libxshmfence # <- the missing fence library
+          # add more here if BetterDiscord complains about others
+        ];
     };
   };
-  
+
   # virtualisation.virtualbox.host.enable = true; # Causes build failures
   # virtualisation.virtualbox.guest.enable = true;
   # virtualisation.virtualbox.host.enableExtensionPack = true;
@@ -150,7 +164,7 @@
 
   # X11 and Display Manager Configuration
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
+  services.displayManager.gdm.enable = true;
   #services.xserver.displayManager.gdm.wayland = lib.mkForce false; #AI trying to fix rog-control-center
 
   services.xserver.xkb.layout = "us";
@@ -182,14 +196,22 @@
   users.users.parker = {
     isNormalUser = true;
     description = "Parker";
-    extraGroups = [ "networkmanager" "wheel" "i2c" "disk" "video" ]; # Added input and video groups
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "i2c"
+      "disk"
+      "video"
+    ]; # Added input and video groups
     # packages = with pkgs; [ rog-control-center ];
   };
 
   home-manager = {
     # also pass inputs to home-manager modules
     extraSpecialArgs = { inherit inputs pkgs; };
-    users = { "parker" = import ./home.nix; };
+    users = {
+      "parker" = import ./home.nix;
+    };
     # package = pkgs.home-manager;
   };
 
@@ -204,10 +226,9 @@
     enable = true;
     packages = [
       "com.bambulab.BambuStudio"
-      "com.brave.Browser"
+      #"com.brave.Browser"
       "com.revolutionarygamesstudio.ThriveLauncher"
-      "app.zen_browser.zen"
-      "dev.zed.Zed"
+      #"app.zen_browser.zen"
     ];
   };
 
@@ -228,7 +249,6 @@
 
   nix.settings.trusted-users = [ "parker" ];
 
-
   # Bluetooth and blueman-applet
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
@@ -239,12 +259,12 @@
   # stylix.image = /home/parker/Pictures/52259221868_3d2963c1fe_o.png;
   # stylix.polarity = "dark";
 
-   programs.hyprland = {
-     enable = true;
-     xwayland.enable = true;
-     package = pkgs.hyprland;
-     # extraConfig = builtins.readFile (toString ./hyprland.conf);
-   };
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+    package = pkgs.hyprland;
+    # extraConfig = builtins.readFile (toString ./hyprland.conf);
+  };
 
   programs.steam.enable = true;
   # programs.gamemode.enable = true;
@@ -257,16 +277,20 @@
     # DISPLAY = ":1";
   };
 
-  environment.variables.LD_LIBRARY_PATH = lib.mkForce (with pkgs; lib.makeLibraryPath [ libxkbcommon ]); # Supposedly needed for rog-control-center to work
-
+  environment.variables.LD_LIBRARY_PATH = lib.mkForce (
+    with pkgs; lib.makeLibraryPath [ libxkbcommon ]
+  ); # Supposedly needed for rog-control-center to work
 
   # Import the packages from packages.nix
-  environment.systemPackages = with pkgs; (
-    (import ./packages.nix { inherit pkgs; }) ++ [
-      libglvnd
-      pkgs.ddcutil
-    ]
-  );
+  environment.systemPackages =
+    with pkgs;
+    (
+      (import ./packages.nix { inherit pkgs; })
+      ++ [
+        libglvnd
+        pkgs.ddcutil
+      ]
+    );
 
   # Fonts Packages
   fonts.packages = with pkgs; [
@@ -279,8 +303,8 @@
     dejavu_fonts
     source-code-pro # Default monospace font in 3.32
     source-sans
-    #nerdfonts
-    (nerdfonts.override { fonts = [ "0xProto" "DroidSansMono" ]; })
+    pkgs.nerd-fonts._0xproto
+    pkgs.nerd-fonts.droid-sans-mono
     font-awesome_5
   ];
 
@@ -301,14 +325,19 @@
   # Driver Version: 555.58.02 CUDA Version 12.5 [CAUSES ISSUES]
   # nixos-unstable nvidia-open does not include nvidia-* commands which breaks everything
 
-
   # services.picom.vSync = true; # compositor with X11 support. Don't know why its in my config.
 
   # boot.kernelParams = [ "nvidia-drm.fbdev=1" ];
-  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" "acpi_backlight=native" ]; # acpi_backlight=native is required for brightnessctl to work
+  boot.kernelParams = [
+    "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+    "acpi_backlight=native"
+  ]; # acpi_backlight=native is required for brightnessctl to work
 
   boot.blacklistedKernelModules = [ "nouveau" ];
-  services.xserver.videoDrivers = [ "modesetting" "nvidia" ];
+  services.xserver.videoDrivers = [
+    "modesetting"
+    "nvidia"
+  ];
 
   hardware = {
     nvidia = {

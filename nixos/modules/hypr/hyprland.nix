@@ -132,10 +132,10 @@
         };
 
         # Gestures
-        gestures = {
-          workspace_swipe = true;
-          workspace_swipe_fingers = 3;
-        };
+        # gestures = {
+        #   workspace_swipe = true;
+        #   workspace_swipe_fingers = 3;
+        # };
 
         # Misc
         misc = {

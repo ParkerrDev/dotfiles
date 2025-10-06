@@ -12,6 +12,7 @@ let
 
   # NixOS-specific packages
   nixosPackages = [
+    nh # nix management utility
     nixpkgs-fmt
     nil # language server protocol
     # lxqt.lxqt-policykit  # Polkit authentication
@@ -22,6 +23,7 @@ let
     #appimage-run # Run app images
     ntfsprogs # Used for NTFS with Gparted
     home-manager
+    nixd
   ];
 
   # Hardware control tools
@@ -75,28 +77,31 @@ let
 
   # Personal applications
   personal = [
+    zed-editor
     kitty
-    brave #chromium broken on wayland with hybrid GPU and HiDPI
+    brave # chromium broken on wayland with hybrid GPU and HiDPI
     #ladybird
     # inputs.zen-browser.packages."${system}".specific
     notesnook
-    vscode-fhs # changed from vscode to vscode-fhs
+    #vscode-fhs # changed from vscode to vscode-fhs
     # code-cursor
-    obs-studio
+    #obs-studio
     qbittorrent
-    ytdownloader
+    alpaca
+    #ytdownloader
     wireguard-tools # VPNs
     openvpn # VPNs
     motrix
     rpi-imager
-    easyeffects # Equalizer
+    #easyeffects # Equalizer
     # zed-editor
-    github-desktop
-    gimp
-    betterdiscord-installer
+    #github-desktop
+    #gimp
+    #betterdiscord-installer
     telegram-desktop
-    discord-ptb
-    cmatrix
+    #discord-ptb
+    #cmatrix
+    deskflow
   ];
 
   # Hacking tools
@@ -117,7 +122,7 @@ let
   gaming = [
     protonup-qt
     mangohud
-    lutris
+    #lutris
     protontricks
     gamemode
     gamescope
@@ -125,21 +130,22 @@ let
 
   # Command line tools
   commandLine = [
+    helix
     blesh # ble.sh
     atuin
-    neovim
-    neofetch
+    #neovim
+    #neofetch
     fastfetch
     git
-    nh # nix management utility
     usbutils # lsusb
     feh
     lf # cli file manager
     fzf
     tree
+    tldr
     proxychains
     imagemagick
-    ffmpeg # required by imagemagick 
+    ffmpeg # required by imagemagick
     unzip
     ipatool
     dpkg
@@ -150,8 +156,8 @@ let
     pciutils
     fabric-ai # fabric-cli (ai tool)
     lynx # text browser
-    #thefuck # command line tool to correct mistakes
-  ];
+    zellij
+ ];
 
   # Graphical utilities
   graphicalUtilities = [
@@ -171,12 +177,17 @@ let
     gnumake
     cmake
     xorg.xhost # manage xhost perms
-    (ollama.override { acceleration = "cuda"; })
+    # (ollama.override { acceleration = "cuda"; })
+    ollama-cuda
     nodejs_22 # npm for electron apps
     pnpm
     wireplumber # not sure what it is used for
     devenv
-    conda
+    cargo
+    rustc
+    rustfmt
+    clippy
+    rust-analyzer
   ];
 
   # Combine all groups including the optional rogControlCenter

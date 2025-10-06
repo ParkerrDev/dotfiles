@@ -2,9 +2,9 @@
   description = "Nixos flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:kamokuma5/nixpkgs/personal_mods";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
