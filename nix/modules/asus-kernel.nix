@@ -100,7 +100,7 @@
     # Default to using iGPU. Can use CLI to enable dGPU with a logout
     supergfxd.enable = true;
     supergfxd.settings = {
-      mode = "Dedicated";
+      mode = "Hybrid";
       vfio_enable = true;
       vfio_save = false;
       always_reboot = false;

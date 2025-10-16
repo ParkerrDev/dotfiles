@@ -3,7 +3,7 @@
 {
   options = {
     hyprlandLayout = lib.mkOption {
-      default = "master";
+      default = "dwindle";
       description = ''
         hyprland window layout
        '';
@@ -20,32 +20,30 @@
         monitor = [
           "eDP-2,highres,0x0,auto"
           "eDP-1,highres,0x0,auto"
-          # ",highres,auto,auto"
         ];
 
         # Xwayland
         xwayland.force_zero_scaling = true;
 
         # Environment variables
-        env = [
-          "BROWSER, brave-browser"
-          "EDITOR, code"
-          "TERM, kitty"
-          "XDG_CURRENT_DESKTOP, Hyprland"
-          "XDG_SESSION_DESKTOP, Hyprland"
-          "XDG_SESSION_TYPE,wayland"
-          "ELECTRON_OZONE_PLATFORM_HINT,auto"
-          "LIBVA_DRIVER_NAME,nvidia"
-          "__GLX_VENDOR_LIBRARY_NAME,nvidia"
-          "NVD_BACKEND,direct"
-          "GDK_DPI_SCALE,1"
-          "GDK_SCALE,1"
-          "XCURSOR_SIZE,24"
-          # "QT_AUTO_SCREEN_SCALE_FACTOR,\"1.50\""
-          # "QT_QPA_PLATFORM,\"wayland;xcb\""
-          # "QT_WAYLAND_DISABLE_WINDOWDECORATION,\"1\""
-          # "QT_QPA_PLATFORMTHEME,\"gtk4\""
-        ];
+        # env = [
+        # "BROWSER, brave-browser"
+        # "EDITOR, code"
+        # "TERM, kitty"
+        # "XDG_CURRENT_DESKTOP, Hyprland"
+        # "XDG_SESSION_DESKTOP, Hyprland"
+        # "XDG_SESSION_TYPE,wayland"
+        # "ELECTRON_OZONE_PLATFORM_HINT,auto"
+        # "__GLX_VENDOR_LIBRARY_NAME,nvidia"
+        # "NVD_BACKEND,direct"
+        # "GDK_DPI_SCALE,1"
+        # "GDK_SCALE,1"
+        # "XCURSOR_SIZE,24"
+        # "GBM_BACKEND,nvidia-drm"
+        # "WLR_NO_HARDWARE_CURSORS,1"
+        # "__GL_GSYNC_ALLOWED,0"
+        # "__GL_VRR_ALLOWED,0"
+        # ];
 
         # Autostart
         exec-once = [
@@ -61,6 +59,7 @@
           "swayidle -w timeout 300 '$lock' timeout 300 'hyprctl dispatch dpms off' resume 'hyprctl dispatch dpms on' before-sleep '$lock'"
           "hypridle"
           "ollama serve"
+          "asusctl -c 75"
         ];
 
         # Layer rules
@@ -78,7 +77,7 @@
         # Variables
         "$terminal" = "kitty";
         "$fileManager" = "nautilus";
-        "$menu" = "pgrep -x .wofi-wrapped >/dev/null 2>&1 || wofi -p \"Search Apps\" --show drun --width 500 --height 400 -I --matching multi-contains --insensitive";
+        "$menu" = "pgrep -x .wofi-wrapped >/dev/null 2>&1 || wofi -p \"Spotlight\" --show drun --width 500 --height 400 -I --matching multi-contains --insensitive";
         "$mainMod" = "SUPER";
         "$lock" = "hyprlock";
 
@@ -150,7 +149,7 @@
           "$mainMod, END, exit,"
           "$mainMod, F, exec, $fileManager"
           "$mainMod, A, togglefloating,"
-          "$mainMod, TAB, exec, $menu"
+          "$mainMod, SPACE, exec, $menu"
           "$mainMod, U, pseudo,"
           "$mainMod, S, togglesplit,"
           "$mainMod, R, exec, hyprctl reload && pkill waybar && waybar &"
