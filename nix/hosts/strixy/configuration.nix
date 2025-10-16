@@ -164,8 +164,12 @@
 
   # X11 and Display Manager Configuration
   services.xserver.enable = true;
-  services.displayManager.gdm.enable = true;
-  #services.xserver.displayManager.gdm.wayland = lib.mkForce false; #AI trying to fix rog-control-center
+  # Disable GDM completely
+  services.displayManager.gdm.enable = false;
+  # Enable SDDM - most compatible with Hyprland
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true; # Enable Wayland support
+  services.displayManager.sddm.theme = "chili"; # Nice theme
 
   services.xserver.xkb.layout = "us";
   services.xserver.xkb.variant = "";
@@ -209,6 +213,7 @@
   home-manager = {
     # also pass inputs to home-manager modules
     extraSpecialArgs = { inherit inputs pkgs; };
+    backupFileExtension = "backup";
     users = {
       "parker" = import ./home.nix;
     };
@@ -239,6 +244,9 @@
   # systemd.services.supergfxd.path = [ pkgs.pciutils ];
 
   services.ratbagd.enable = true; # Piper Mouse Configuration
+
+  # VA-API configuration for hardware video acceleration
+  services.pipewire.wireplumber.enable = true;
 
   #hardware.enableAllFirmware = true; # trying to fix sound - didnt fix
 
@@ -271,9 +279,11 @@
 
   # Environment Variables
   environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1"; # Hint electron apps to use Wayland. Must disable hardware acceleration to work properly.
+    NIXOS_OZONE_WL = "1"; # Hint electron apps to use Wayland
     WLR_NO_HARDWARE_CURSORS = "1";
     NH_FLAKE = "/home/parker/Desktop/dotfiles/nixos"; # updated from FLAKE to NH_FLAKE for home-manager 4.0.3
+    # Hardware acceleration variables (safe for display manager)
+    LIBVA_DRIVER_NAME = "nvidia";
     # DISPLAY = ":1";
   };
 
@@ -289,6 +299,13 @@
       ++ [
         libglvnd
         pkgs.ddcutil
+        # Additional graphics packages for hardware acceleration
+        vulkan-tools
+        vulkan-loader
+        vulkan-validation-layers
+        mesa
+        libva-utils
+        vdpauinfo
       ]
     );
 
@@ -353,10 +370,11 @@
       };
       nvidiaSettings = true;
       powerManagement.enable = true;
-      powerManagement.finegrained = true;
+      powerManagement.finegrained = true; # Enable fine-grained for offload mode
       modesetting.enable = true;
       dynamicBoost.enable = true;
       forceFullCompositionPipeline = true;
+      # Use offload mode for better compatibility with display managers
       prime = {
         offload = {
           enable = true;
@@ -368,8 +386,7 @@
     };
     graphics = {
       enable = true;
-      #driSupport = true;
-      #driSupport32Bit = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
         vaapiVdpau
         libvdpau-va-gl
@@ -377,6 +394,9 @@
         vaapiIntel # i965 driver (older fallback)
         intel-media-driver
         intel-vaapi-driver
+        # Additional OpenGL packages
+        libglvnd
+        mesa
       ];
     };
   };

@@ -35,7 +35,12 @@ let
     i2c-tools # required by ddcutil
     cudaPackages.cudatoolkit
     asusctl
-  ];
+    pulseaudio
+
+    # TRYING TO fix HARDWARE ACCELERATION
+    vulkan-tools
+    vulkan-loader
+    ];
 
   # Hyprland-related packages
   hyprland = [
@@ -78,9 +83,11 @@ let
   # Personal applications
   personal = [
     zed-editor
+    code-cursor-fhs
     kitty
+    alacritty
     brave # chromium broken on wayland with hybrid GPU and HiDPI
-    #ladybird
+    ladybird
     # inputs.zen-browser.packages."${system}".specific
     notesnook
     #vscode-fhs # changed from vscode to vscode-fhs
@@ -99,7 +106,8 @@ let
     #gimp
     #betterdiscord-installer
     telegram-desktop
-    #discord-ptb
+    discord-ptb
+    discord
     #cmatrix
     deskflow
   ];
@@ -132,7 +140,7 @@ let
   commandLine = [
     helix
     blesh # ble.sh
-    atuin
+    #atuin
     #neovim
     #neofetch
     fastfetch
@@ -157,6 +165,8 @@ let
     fabric-ai # fabric-cli (ai tool)
     lynx # text browser
     zellij
+    oterm # ollama tui
+    discordo # discord cli
  ];
 
   # Graphical utilities

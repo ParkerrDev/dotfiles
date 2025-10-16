@@ -20,6 +20,16 @@ in
   home.file = { };
   home.sessionVariables = {
     PRIMARY_MONITOR = "eDP-1";
+    # Hardware acceleration variables (user-level, safe)
+    __GL_THREADED_OPTIMIZATIONS = "1";
+    __GL_SYNC_TO_VBLANK = "0";
+    # VA-API variables
+    LIBVA_DRIVER_NAME = "nvidia";
+    # Vulkan variables
+    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_layers.json";
+    # Mesa variables
+    MESA_GL_VERSION_OVERRIDE = "4.6";
+    MESA_GLSL_VERSION_OVERRIDE = "460";
   };
 
   home.enableNixpkgsReleaseCheck = false;
@@ -73,6 +83,49 @@ in
   # };
 
   home.sessionVariables.GTK_THEME = "Zorin-Mint-Light";
+
+  programs.atuin = {
+  enable = true;
+  enableBashIntegration = true;
+  
+  settings = {
+    sync_address = "https://atuin.parkerhunt.me";  # Replace with jarvis's actual IP
+    
+    auto_sync = true;
+    sync_frequency = "1m";
+    search_mode = "fuzzy";
+    style = "compact";
+    show_preview = true;
+    filter_mode_shell_up_key_binding = "global";
+    sync_on_cd = true;       # Sync when changing directories
+    update_on_sync = true;   # Update local db immediately on sync
+     filter_mode = "global";
+  };
+};
+
+  # Brave browser configuration with hardware acceleration
+  programs.brave = {
+    enable = true;
+    commandLineArgs = [
+      # Conservative hardware acceleration flags for Prime offload
+      "--enable-gpu"
+      "--enable-gpu-rasterization"
+      "--enable-accelerated-video-decode"
+      "--enable-accelerated-video-encode"
+      "--enable-gpu-compositing"
+      # VA-API flags
+      "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
+      "--use-gl=desktop"
+      # Wayland flags
+      "--ozone-platform=wayland"
+      "--enable-wayland-ime"
+      "--enable-features=WaylandWindowDecorations"
+      # Performance flags
+      "--disable-background-timer-throttling"
+      "--disable-backgrounding-occluded-windows"
+      "--disable-renderer-backgrounding"
+    ];
+  };
 
   # Example keybinding (adjust to your window manager)
   # Example for sxhkd:
