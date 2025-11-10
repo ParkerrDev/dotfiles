@@ -9,7 +9,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ./modules/asus-kernel.nix
+    ../../modules/asus-kernel.nix
     ./pkgs
   ];
 
@@ -23,6 +23,7 @@
   ]; # Nix Flakes
   nix.settings.max-jobs = lib.mkDefault 2; # limit parallel builds
   nix.settings.cores = lib.mkDefault 2; # limit build cores per job
+  nix.settings.trusted-users = [ "parker" ];
 
   # Constrain nix-daemon with systemd cgroups to avoid system lockups during builds
   systemd.slices."nix-daemon" = {
@@ -43,48 +44,115 @@
   # DDCUTIL Brightness Control
   users.groups.i2c = { };
   users.extraGroups.i2c.members = [ "parker" ];
+  
+  services.udev.enable = true;
+  services.udev.extraRules = ''
+    SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+  '';
+  systemd.services.udevd.restartIfChanged = true;
+
+  # SSH
+  services.openssh.enable = true; # allows other devices to ssh into laptop
+
+  # ============================================================================
+  # BOOT CONFIGURATION - ALL CONSOLIDATED HERE
+  # ============================================================================
+  
+  # Bootloader
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.timeout = 5;  # 5 seconds to select boot options, set to 0 for instant boot
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  # LUKS Encryption
+  boot.initrd.luks.devices."luks-2cdebd65-326f-46c5-bfa0-753247f43f88".device =
+    "/dev/disk/by-uuid/2cdebd65-326f-46c5-bfa0-753247f43f88";
+
+  # Kernel Modules
   boot.kernelModules = [
     "i2c-dev"
     "asus_nb_wmi"
   ];
-  services.udev.extraRules = ''
-    SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
-  '';
+  
+  # Load NVIDIA modules early for Plymouth support
+  boot.initrd.kernelModules = [ 
+    "nvidia" 
+    "nvidia_modeset" 
+    "nvidia_uvm" 
+    "nvidia_drm" 
+  ];
 
-  #services.hardware.bolt.enable = true; # Thunderbolt Support
+  boot.blacklistedKernelModules = [ "nouveau" ];
 
-  services.udev.enable = true;
-  systemd.services.udevd.restartIfChanged = true;
+  # Consolidated Kernel Parameters - ALL IN ONE PLACE
+  boot.kernelParams = [
+    # Plymouth and quiet boot params
+    "quiet"
+    "splash"
+    "boot.shell_on_fail"
+    "loglevel=3"
+    "rd.systemd.show_status=false"
+    "rd.udev.log_level=3"
+    "udev.log_priority=3"
+    # NVIDIA and hardware params
+    "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+    "acpi_backlight=native"
+  ];
 
-  services.openssh.enable = true; # allows other devices to ssh into laptop
-  # Bootloader Configuration1
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.timeout = 60;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.initrd.luks.devices."luks-2cdebd65-326f-46c5-bfa0-753247f43f88".device =
-    "/dev/disk/by-uuid/2cdebd65-326f-46c5-bfa0-753247f43f88";
+  # Plymouth Boot Splash Configuration
+  boot.plymouth = {
+    enable = true;
+    theme = "rog_2";
+    themePackages = with pkgs; [
+      (adi1090x-plymouth-themes.override {
+        selected_themes = [ "rog_2" ];
+      })
+    ];
+  };
+  # Silent/Quiet Boot Configuration
+  boot.consoleLogLevel = 0;      # Suppress console messages
+  boot.initrd.verbose = false;   # Quiet initrd
 
-  # Pin the kernel version
-  # boot.kernelPackages = pkgs.linuxPackages_6_12;
-
-  # boot.supportedFilesystems = [ "ntfs" ];
-
+  # Sound driver configuration
   boot.extraModprobeConfig = ''
     options snd-intel-dspcfg dsp_driver=1
   '';
-  # boot.initrd.availableKernelModules = [ "mt76x2u" ];
-  # # boot.extraModulePackages = [ pkgsmypackages.mt7961 ];
-  # hardware.usb-modeswitch.enable = true;
 
-  #Virtualization
+  # ============================================================================
+  # DISPLAY MANAGER - greetd with tuigreet
+  # ============================================================================
+  
+  services.xserver.enable = true;
+  services.xserver.xkb.layout = "us";
+  services.xserver.xkb.variant = "";
+  
+  # Disable other display managers
+  services.displayManager.gdm.enable = false;
 
+  # greetd Configuration
+  services.greetd = {
+    enable = true;
+    settings = {
+      terminal = {
+        vt = lib.mkForce 2;  # Use VT2 to avoid systemd message leakage, force override default
+      };
+      default_session = {
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-user-session --asterisks --greeting 'Welcome to NixOS, Parker' --cmd Hyprland";
+        user = "greeter";
+      };
+    };
+  };
+
+  # ============================================================================
+  # VIRTUALIZATION
+  # ============================================================================
+  
   users.extraGroups.docker.members = [ "parker" ];
   virtualisation.docker.enable = true;
   virtualisation.docker.rootless = {
     enable = true;
     setSocketVariable = true;
   };
-  hardware.nvidia-container-toolkit.enable = true; # enable gpu passtrhough w/ docker
+  hardware.nvidia-container-toolkit.enable = true; # enable gpu passthrough w/ docker
 
   virtualisation.docker.daemon.settings = {
     userland-proxy = false;
@@ -92,37 +160,25 @@
     metrics-addr = "0.0.0.0:9323";
   };
 
-  programs.nano.enable = false; # remove nano (using helix instead)
-
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
 
-  programs.appimage = {
-    enable = true; # already “on” if you could call appimage-run
-    # optional but nice: lets you run AppImages just by executing them
-    binfmt = true;
+  # ============================================================================
+  # PROGRAMS
+  # ============================================================================
+  
+  programs.nano.enable = false; # remove nano (using helix instead)
 
-    # Wrap the default appimage-run with extra libraries
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
     package = pkgs.appimage-run.override {
       extraPkgs =
         pkgs: with pkgs; [
           xorg.libxshmfence # <- the missing fence library
-          # add more here if BetterDiscord complains about others
         ];
     };
   };
-
-  # virtualisation.virtualbox.host.enable = true; # Causes build failures
-  # virtualisation.virtualbox.guest.enable = true;
-  # virtualisation.virtualbox.host.enableExtensionPack = true;
-
-  # Networking Configuration
-  networking.hostName = "strixy";
-  networking.networkmanager.enable = true;
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  #Proxy
-  #networking.proxy.default = "http://172.20.10.1:9877";
 
   programs.proxychains = {
     enable = true;
@@ -137,11 +193,25 @@
     };
   };
 
-  # programs.git = {
-  #   enable = true;
-  # };
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+    package = pkgs.hyprland;
+  };
 
-  # Time and Locale Configuration
+  programs.steam.enable = true;
+
+  # ============================================================================
+  # NETWORKING
+  # ============================================================================
+  
+  networking.hostName = "strixy";
+  networking.networkmanager.enable = true;
+
+  # ============================================================================
+  # LOCALIZATION
+  # ============================================================================
+  
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
@@ -156,47 +226,67 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  # ============================================================================
+  # XDG PORTALS
+  # ============================================================================
+  
   xdg.portal.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   xdg.portal.config.common.default = "gtk";
 
-  # services.xserver.desktopManager.gnome.enable = true;
-
-  # X11 and Display Manager Configuration
-  services.xserver.enable = true;
-  # Disable GDM completely
-  services.displayManager.gdm.enable = false;
-  # Enable SDDM - most compatible with Hyprland
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true; # Enable Wayland support
-  services.displayManager.sddm.theme = "chili"; # Nice theme
-
-  services.xserver.xkb.layout = "us";
-  services.xserver.xkb.variant = "";
-
-  # security.rtkit.enable = true;
+  # ============================================================================
+  # AUDIO - PipeWire
+  # ============================================================================
+  
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
     jack.enable = true;
   };
+  services.pipewire.wireplumber.enable = true;
 
-  #hardware.pulseaudio.package = pkgs.pulseaudioFull;
-  #nixpkgs.config.pulseaudio = true;
-  #hardware.pulseaudio.enable = true;
-  #hardware.pulseaudio.support32Bit = true;
-
-  # Security and Polkit Configuration
+  # ============================================================================
+  # SECURITY
+  # ============================================================================
+  
   security.polkit.enable = true;
   security.rtkit.enable = true;
 
-  # Printing Configuration
+  # ============================================================================
+  # SERVICES
+  # ============================================================================
+  
   services.printing.enable = true;
-  # services.dbus.enable = true;
-  # User Configuration
+  services.samba.enable = true; # iPhone File support
+  services.usbmuxd.enable = true; # iPhone File support
+  services.udisks2.enable = true; # Auto detection and mounting of drives
+  services.gvfs.enable = true; # Auto detection and mounting of drives
+  services.ratbagd.enable = true; # Piper Mouse Configuration
+
+  # Flatpak
+  services.flatpak = {
+    enable = true;
+    packages = [
+      "com.bambulab.BambuStudio"
+      "com.revolutionarygamesstudio.ThriveLauncher"
+    ];
+  };
+
+  # ============================================================================
+  # BLUETOOTH
+  # ============================================================================
+  
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  hardware.bluetooth.package = pkgs.bluez;
+  services.blueman.enable = true;
+
+  # ============================================================================
+  # USER CONFIGURATION
+  # ============================================================================
+  
   users.users.parker = {
     isNormalUser = true;
     description = "Parker";
@@ -206,151 +296,91 @@
       "i2c"
       "disk"
       "video"
-    ]; # Added input and video groups
-    # packages = with pkgs; [ rog-control-center ];
+    ];
   };
 
   home-manager = {
-    # also pass inputs to home-manager modules
     extraSpecialArgs = { inherit inputs pkgs; };
     backupFileExtension = "backup";
     users = {
       "parker" = import ./home.nix;
     };
-    # package = pkgs.home-manager;
   };
 
-  # Allow Unfree Packages
+  # ============================================================================
+  # NIXPKGS CONFIG
+  # ============================================================================
+  
   nixpkgs.config.allowUnfree = true;
   hardware.enableRedistributableFirmware = true;
 
-  services.samba.enable = true; # iPhone File support (i think)
-  services.usbmuxd.enable = true; # iPhone File support (i think)
-
-  services.flatpak = {
-    enable = true;
-    packages = [
-      "com.bambulab.BambuStudio"
-      #"com.brave.Browser"
-      "com.revolutionarygamesstudio.ThriveLauncher"
-      #"app.zen_browser.zen"
-    ];
+  nixpkgs.config.packageOverrides = pkgs: {
+    intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
   };
 
-  services.udisks2.enable = true; # Auto detection and mounting of drives
-  services.gvfs.enable = true; # Auto detection and mounting of drives
-
-  # services.supergfxd.enable = true;
-  # systemd.services.supergfxd.path = [ pkgs.pciutils ];
-
-  services.ratbagd.enable = true; # Piper Mouse Configuration
-
-  # VA-API configuration for hardware video acceleration
-  services.pipewire.wireplumber.enable = true;
-
-  #hardware.enableAllFirmware = true; # trying to fix sound - didnt fix
-
-  services.windscribe = {
-    enable = true;
-    autoStart = true; # Optional: set to false if you don't want it to start automatically
-  };
-
-  nix.settings.trusted-users = [ "parker" ];
-
-  # Bluetooth and blueman-applet
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-  hardware.bluetooth.package = pkgs.bluez;
-  hardware.bluetooth.powerOnBoot = true;
-
-  # stylix.enable = false;
-  # stylix.image = /home/parker/Pictures/52259221868_3d2963c1fe_o.png;
-  # stylix.polarity = "dark";
-
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-    package = pkgs.hyprland;
-    # extraConfig = builtins.readFile (toString ./hyprland.conf);
-  };
-
-  programs.steam.enable = true;
-  # programs.gamemode.enable = true;
-
-  # Environment Variables
+  # ============================================================================
+  # ENVIRONMENT
+  # ============================================================================
+  
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use Wayland
     WLR_NO_HARDWARE_CURSORS = "1";
-    NH_FLAKE = "/home/parker/Desktop/dotfiles/nixos"; # updated from FLAKE to NH_FLAKE for home-manager 4.0.3
-    # Hardware acceleration variables (safe for display manager)
+    NH_FLAKE = "/home/parker/Desktop/dotfiles/nixos";
     LIBVA_DRIVER_NAME = "nvidia";
-    # DISPLAY = ":1";
   };
 
   environment.variables.LD_LIBRARY_PATH = lib.mkForce (
     with pkgs; lib.makeLibraryPath [ libxkbcommon ]
-  ); # Supposedly needed for rog-control-center to work
+  );
 
-  # Import the packages from packages.nix
+  # System Packages
   environment.systemPackages =
     with pkgs;
     (
       (import ./packages.nix { inherit pkgs; })
       ++ [
+        # greetd - FIXED: renamed from greetd.tuigreet to tuigreet
+        tuigreet
+        
+        # Graphics and utilities
         libglvnd
-        pkgs.ddcutil
-        # Additional graphics packages for hardware acceleration
+        ddcutil
         vulkan-tools
         vulkan-loader
         vulkan-validation-layers
         mesa
         libva-utils
         vdpauinfo
+        
+        # CUDA
+        cudaPackages_12_8.cudatoolkit
+        cudaPackages_12_8.cuda_nvcc
+        cudaPackages_12_8.cuda_cudart
+        cudaPackages_12_8.cuda_cupti
       ]
     );
 
-  # Fonts Packages
+  # ============================================================================
+  # FONTS
+  # ============================================================================
+  
   fonts.packages = with pkgs; [
-    # font-awesome
     noto-fonts
-    #noto-fonts-cjk - rog-control-center possibly not working because of this being deprecated
     noto-fonts-cjk-sans
     noto-fonts-emoji
     cantarell-fonts
     dejavu_fonts
-    source-code-pro # Default monospace font in 3.32
+    source-code-pro
     source-sans
-    pkgs.nerd-fonts._0xproto
-    pkgs.nerd-fonts.droid-sans-mono
+    nerd-fonts._0xproto
+    nerd-fonts.droid-sans-mono
     font-awesome_5
   ];
 
-  # Gaming and NVIDIA Configuration
-  # services.xserver.videoDrivers = [ "intel" "nvidia" ];
-
-  # hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-  #   version = "550.78";
-  #   sha256_64bit = "sha256-NAcENFJ+ydV1SD5/EcoHjkZ+c/be/FQ2bs+9z+Sjv3M=";
-  #   sha256_aarch64 = "sha256-2POG5RWT2H7Rhs0YNfTGHO64Q8u5lJD9l/sQCGVb+AA=";
-  #   openSha256 = "sha256-cF9omNvfHx6gHUj2u99k6OXrHGJRpDQDcBG3jryf41Y=";
-  #   settingsSha256 = "sha256-lZiNZw4dJw4DI/6CI0h0AHbreLm825jlufuK9EB08iw=";
-  #   persistencedSha256 = "sha256-qDGBAcZEN/ueHqWO2Y6UhhXJiW5625Kzo1m/oJhvbj4=";
-  # };
-
-  # Driver Version: 550.78 CUDA Version: 12.4 [WORKING]
-  # Driver Version: 550.107.02 CUDA Version: 12.4 [WORKING]
-  # Driver Version: 555.58.02 CUDA Version 12.5 [CAUSES ISSUES]
-  # nixos-unstable nvidia-open does not include nvidia-* commands which breaks everything
-
-  # services.picom.vSync = true; # compositor with X11 support. Don't know why its in my config.
-
-  # boot.kernelParams = [ "nvidia-drm.fbdev=1" ];
-  boot.kernelParams = [
-    "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
-    "acpi_backlight=native"
-  ]; # acpi_backlight=native is required for brightnessctl to work
-
-  boot.blacklistedKernelModules = [ "nouveau" ];
+  # ============================================================================
+  # NVIDIA CONFIGURATION
+  # ============================================================================
+  
   services.xserver.videoDrivers = [
     "modesetting"
     "nvidia"
@@ -358,9 +388,8 @@
 
   hardware = {
     nvidia = {
-      # ( current working ) NVIDIA-SMI 550.142 Driver Version: 550.142 CUDA Version: 12.4
-      open = false; # the open source drivers suck balls
-      # package = config.boot.kernelPackages.nvidiaPackages.production; # 550 Driver
+      # NVIDIA-SMI 570.86.16 Driver Version: 570.86.16
+      open = false; # Proprietary drivers
       package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
         version = "570.86.16";
         sha256_64bit = "sha256-RWPqS7ZUJH9JEAWlfHLGdqrNlavhaR1xMyzs8lJhy9U=";
@@ -384,6 +413,7 @@
         nvidiaBusId = "PCI:1:0:0";
       };
     };
+    
     graphics = {
       enable = true;
       enable32Bit = true;
@@ -394,13 +424,16 @@
         vaapiIntel # i965 driver (older fallback)
         intel-media-driver
         intel-vaapi-driver
-        # Additional OpenGL packages
         libglvnd
         mesa
       ];
     };
   };
 
+  # ============================================================================
+  # SPECIALISATIONS
+  # ============================================================================
+  
   specialisation = {
     ios-proxy.configuration = {
       networking.proxy.default = "http://172.20.10.1:9877";
@@ -408,6 +441,7 @@
         ALL_PROXY = "http://172.20.10.1:9877";
       };
     };
+    
     gaming-time.configuration = {
       hardware.nvidia = {
         powerManagement.finegrained = lib.mkForce false;
@@ -419,9 +453,4 @@
       };
     };
   };
-
-  nixpkgs.config.packageOverrides = pkgs: {
-    intel-vaapi-driver = pkgs.intel-vaapi-driver.override { enableHybridCodec = true; };
-  };
-
 }

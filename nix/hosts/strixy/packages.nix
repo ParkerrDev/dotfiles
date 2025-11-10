@@ -32,8 +32,8 @@ let
     libratbag
     g810-led
     ddcutil
-    i2c-tools # required by ddcutil
     cudaPackages.cudatoolkit
+    i2c-tools # required by ddcutil
     asusctl
     pulseaudio
 
@@ -115,9 +115,27 @@ let
   # Hacking tools
   hacking = [
     aircrack-ng
-    (hashcat.overrideAttrs (old: {
-      nativeBuildInputs = old.nativeBuildInputs or [ ] ++ [ autoAddDriverRunpath ];
-    }))
+    (pkgs.runCommand "hashcat-with-full-cuda" { buildInputs = [ pkgs.makeWrapper ]; } ''
+  mkdir -p $out/bin
+
+  LIBS="${pkgs.lib.makeLibraryPath [
+    pkgs.cudaPackages_12_8.cudatoolkit
+    pkgs.cudaPackages_12_8.cuda_cudart
+    pkgs.cudaPackages_12_8.cuda_nvrtc
+    pkgs.cudaPackages_12_8.cuda_nvcc
+    pkgs.cudaPackages_12_8.libcublas
+    pkgs.cudaPackages_12_8.libcufft
+    pkgs.cudaPackages_12_8.libcurand
+    pkgs.cudaPackages_12_8.libcusolver
+    pkgs.cudaPackages_12_8.libcusparse
+    pkgs.cudaPackages_12_8.cuda_cupti
+  ]}"
+
+  # Add driver libraries first to ensure libcuda.so is found
+  makeWrapper ${pkgs.hashcat}/bin/hashcat $out/bin/hashcat \
+    --prefix LD_LIBRARY_PATH : "/run/opengl-driver/lib:$LIBS"
+'')
+
     hashcat-utils
     wireshark
     hcxtools
@@ -167,6 +185,7 @@ let
     zellij
     oterm # ollama tui
     discordo # discord cli
+    ngrok # for cursor with ollama
  ];
 
   # Graphical utilities

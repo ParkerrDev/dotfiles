@@ -33,7 +33,7 @@
           nix-flatpak.nixosModules.nix-flatpak
           {
             # Import the Windscribe module directly
-            imports = [ ./modules/windscribe ];
+            # imports = [ ./modules/windscribe ];
             # Enable nixpkgs config
             nixpkgs.config.allowUnfree = true;
           }
