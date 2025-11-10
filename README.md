@@ -31,9 +31,9 @@
 | WM (Compositor)  | Hyprland                       |
 | Bar              | Waybar                         |
 | Launcher         | Wofi                           |
-| Editor           | Neovim                         |
+| Editor           | Helix                          |
 | Terminal         | Kitty                          |
 | Fetch Utility    | Fastfetch                      |
-| Display Manager  | GDM                            |
+| Display Manager  | greetd                         |
 
 </div>
