@@ -3,6 +3,7 @@
   pkgs,
   lib,
   inputs,
+  zen-browser,
   ...
 }:
 
@@ -207,6 +208,7 @@
   
   networking.hostName = "strixy";
   networking.networkmanager.enable = true;
+  # networking.networkmanager.wait-online.enable = false;
 
   # ============================================================================
   # LOCALIZATION
@@ -300,7 +302,7 @@
   };
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs pkgs; };
+    extraSpecialArgs = { inherit inputs pkgs zen-browser; };
     backupFileExtension = "backup";
     users = {
       "parker" = import ./home.nix;
@@ -367,7 +369,7 @@
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     cantarell-fonts
     dejavu_fonts
     source-code-pro
@@ -390,13 +392,14 @@
     nvidia = {
       # NVIDIA-SMI 570.86.16 Driver Version: 570.86.16
       open = false; # Proprietary drivers
-      package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-        version = "570.86.16";
-        sha256_64bit = "sha256-RWPqS7ZUJH9JEAWlfHLGdqrNlavhaR1xMyzs8lJhy9U=";
-        openSha256 = "sha256-DuVNA63+pJ8IB7Tw2gM4HbwlOh1bcDg2AN2mbEU9VPE=";
-        settingsSha256 = "sha256-9rtqh64TyhDF5fFAYiWl3oDHzKJqyOW3abpcf2iNRT8=";
-        usePersistenced = false;
-      };
+      # package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+      #   version = "570.86.16";
+      #   sha256_64bit = "sha256-RWPqS7ZUJH9JEAWlfHLGdqrNlavhaR1xMyzs8lJhy9U=y";
+      #   openSha256 = "sha256-DuVNA63+pJ8IB7Tw2gM4HbwlOh1bcDg2AN2mbEU9VPE=";
+      #   settingsSha256 = "sha256-9rtqh64TyhDF5fFAYiWl3oDHzKJqyOW3abpcf2iNRT8=";
+      #   usePersistenced = false;
+      # };
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
       nvidiaSettings = true;
       powerManagement.enable = true;
       powerManagement.finegrained = true; # Enable fine-grained for offload mode
@@ -418,10 +421,9 @@
       enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
-        vaapiVdpau
+        libva-vdpau-driver
         libvdpau-va-gl
         nvidia-vaapi-driver
-        vaapiIntel # i965 driver (older fallback)
         intel-media-driver
         intel-vaapi-driver
         libglvnd

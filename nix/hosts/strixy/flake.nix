@@ -5,6 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:kamokuma5/nixpkgs/personal_mods";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
@@ -14,7 +15,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-stable, nix-flatpak, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-stable, nix-flatpak, zen-browser, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
@@ -25,7 +26,7 @@
       nixosConfigurations.strixy = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit inputs pkgs_unstable pkgs_stable;
+          inherit inputs pkgs_unstable pkgs_stable zen-browser;
         };
         modules = [
           ./configuration.nix

@@ -84,14 +84,15 @@ let
   personal = [
     zed-editor
     code-cursor-fhs
+    plex-desktop
+    #code-cursor-fhs
+    vscode-fhs
     kitty
-    alacritty
     brave # chromium broken on wayland with hybrid GPU and HiDPI
     ladybird
+    figma-linux
     # inputs.zen-browser.packages."${system}".specific
     notesnook
-    #vscode-fhs # changed from vscode to vscode-fhs
-    # code-cursor
     #obs-studio
     qbittorrent
     alpaca
@@ -99,16 +100,12 @@ let
     wireguard-tools # VPNs
     openvpn # VPNs
     motrix
-    rpi-imager
+    #rpi-imager
     #easyeffects # Equalizer
-    # zed-editor
-    #github-desktop
-    #gimp
     #betterdiscord-installer
     telegram-desktop
     discord-ptb
     discord
-    #cmatrix
     deskflow
   ];
 
@@ -138,10 +135,17 @@ let
 
     hashcat-utils
     wireshark
+    termshark
     hcxtools
     macchanger
     reaverwps-t6x
+    wifite2
     crunch
+    nmap
+    tor-browser
+    tomb
+    burpsuite
+    sqlmap
   ];
 
   # Gaming tools
@@ -158,17 +162,16 @@ let
   commandLine = [
     helix
     blesh # ble.sh
-    #atuin
-    #neovim
-    #neofetch
     fastfetch
     git
+    git-lfs
     usbutils # lsusb
     feh
     lf # cli file manager
     fzf
     tree
     tldr
+    up
     proxychains
     imagemagick
     ffmpeg # required by imagemagick
@@ -184,8 +187,11 @@ let
     lynx # text browser
     zellij
     oterm # ollama tui
+    nextjs-ollama-llm-ui
     discordo # discord cli
-    ngrok # for cursor with ollama
+    wget
+    net-tools
+    ripgrep
  ];
 
   # Graphical utilities
@@ -206,8 +212,9 @@ let
     gnumake
     cmake
     xorg.xhost # manage xhost perms
-    # (ollama.override { acceleration = "cuda"; })
     ollama-cuda
+    gemini-cli
+    claude-code
     nodejs_22 # npm for electron apps
     pnpm
     wireplumber # not sure what it is used for
@@ -217,6 +224,16 @@ let
     rustfmt
     clippy
     rust-analyzer
+    go
+    openjdk25
+
+
+    python312
+    python312Packages.pip
+    python312Packages.virtualenv
+    uv
+    cudaPackages.cudatoolkit
+    cudaPackages.cudnn
   ];
 
   # Combine all groups including the optional rogControlCenter

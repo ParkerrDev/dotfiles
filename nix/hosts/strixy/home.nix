@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, zen-browser, ... }:
 let
   inherit (pkgs) writeShellScript;
 in
@@ -8,13 +8,16 @@ in
     ../.././modules/waybar/waybar.nix
     ../.././modules/wlogout/wlogout.nix
     ../.././modules/wofi/wofi.nix
-    ../.././modules/hypr/hyprland.nix   # Added hyprland module
+    ../.././modules/hypr/hyprland.nix
+    ../.././modules/hypr/hyprlock.nix
+    ../.././modules/hypr/hypridle.nix
   ];
 
   home.username = "parker";
   home.homeDirectory = "/home/parker";
   home.stateVersion = "24.11";
   home.packages = [
+    zen-browser.packages.${pkgs.system}.default
     pkgs.waybar
   ];
   home.file = { };

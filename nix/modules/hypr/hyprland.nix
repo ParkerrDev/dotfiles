@@ -18,8 +18,9 @@
       settings = {
         # Monitor configuration
         monitor = [
-          "eDP-2,highres,0x0,auto"
-          "eDP-1,highres,0x0,auto"
+          "eDP-1,highrr,0x0,auto"
+          "eDP-2,highrr,0x0,auto"
+          "DP-2,highrr,auto-right,auto"
         ];
 
         # Xwayland
