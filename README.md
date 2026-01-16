@@ -34,6 +34,6 @@
 | Editor           | Helix                          |
 | Terminal         | Kitty                          |
 | Fetch Utility    | Fastfetch                      |
-| Display Manager  | greetd                         |
+| Login Manager  | greetd                         |
 
 </div>
